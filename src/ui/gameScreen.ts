@@ -14,6 +14,7 @@ import { modalOpen } from "./modal";
 import { richText } from "./richText";
 import { discoverForLevel, hasUnseen } from "../game/encyclopedia";
 import { blochAngles, formatBloch} from "../quantum/format";
+import { loadSettings, saveSettings } from "../game/settings";
 import { Complex } from "../quantum/complex";
 
 const SPEEDS = [0.25, 0.5, 1, 2, 4];
@@ -57,7 +58,8 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   /* ---------- state ---------- */
   let mode: Mode = "edit";
   let selected: number | null = null;
-  let speedIdx = 2;
+  const settings = loadSettings();
+  let speedIdx = Math.max(0, Math.min(SPEEDS.length - 1, Math.round(settings.speedIdx) || 0));
   let sim = new Simulation(level, []);
   let tracker = trackerFor(level);
   let colors = tracker.update(sim.state);
@@ -102,6 +104,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   const speedInput = h("input", { type: "range", min: 0, max: SPEEDS.length - 1, step: 1, value: speedIdx });
   speedInput.addEventListener("input", () => {
     speedIdx = Number(speedInput.value);
+    saveSettings({ speedIdx });
     renderHud();
   });
   const undoBtn = h("button", { class: "icon", title: "Undo (Ctrl+Z)", onclick: () => undo() }, "↶");
