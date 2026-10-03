@@ -91,6 +91,21 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     ),
   );
   const encyBtn = h("button", { class: "icon", title: "Encyclopedia", onclick: () => openEncy() }, "Ψ");
+  const labelBtns = (["amplitudes", "bloch"] as const).map((mode) =>
+    h(
+      "button",
+      { onclick: () => setQubitLabels(mode) },
+      mode === "amplitudes" ? "Amplitudes" : "Bloch angles",
+    ),
+  );
+  const settingsMenu = h(
+    "div",
+    { class: "settings-menu" },
+    h("div", { class: "settings-title" }, "Qubit labels"),
+    h("div", { class: "seg" }, ...labelBtns),
+  );
+  settingsMenu.hidden = true;
+  const settingsBtn = h("button", { class: "icon", title: "Settings", onclick: () => toggleSettings() }, "⚙");
   const hpFill = h("div", { class: "fill" });
   const hpLabel = h("div", { class: "label" });
   const wrap = h("div", { class: "board-wrap" });
@@ -120,6 +135,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       h("div", { class: "coins", title: "Coins left" }, h("span", { class: "coin" }), coinsEl),
       h("div", { class: "gate-bar" }, ...chips),
       encyBtn,
+      h("div", { class: "settings" }, settingsBtn, settingsMenu),
       h("button", { class: "icon", title: "Exit to level select", onclick: () => navigate({ name: "levels" }) }, "✕"),
     ),
     h("div", { class: "hpbar" }, hpFill, hpLabel),
@@ -157,16 +173,11 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     },
     onGateHover: (id) => setHint(id === null ? null : placedHint(id)),
     onQubitHover: (k) => setHint(k === null ? null : qubitHint(k)),
-    onQubitClick: (k) => {
-      if (!shown[k].state) { warn("Entangled qubits have no single Bloch angles"); return; }
-      if (!bloch.delete(k)) bloch.add(k);
-      view.drawQubits(qubitRenders());
-    },
   });
   wrap.append(view.el);
 
   /* ---------- qubit display ---------- */
-  const bloch = new Set<number>();  // qubits currently showing Bloch angles (session only)
+  let qubitLabels = settings.qubitLabels;
 
   function look(k: number): QubitLook {
     const col = colors.get(k);
@@ -180,9 +191,9 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   
   const looks = () => level.enemies.map((_, k) => look(k));
 
-  function labels(k: number, lk: QubitLook): Pick<QubitRender, "lines" | "kets"> {
+  function labels(lk: QubitLook): Pick<QubitRender, "lines" | "kets"> {
     if (!lk.state) return { lines: ["P(1)", formatReal(lk.p1)], kets: false };
-    if (bloch.has(k)) return { lines: formatBloch(blochAngles(lk.state[0], lk.state[1])), kets: false };
+    if (qubitLabels === "bloch") return { lines: formatBloch(blochAngles(lk.state[0], lk.state[1])), kets: false };
     return { lines: [formatComplex(lk.state[0]), formatComplex(lk.state[1])], kets: true };
   }
 
@@ -196,8 +207,26 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
         if (anim.wasExited[k]) opacity = 0;
         else if (sim.exited[k]) opacity = t < 0.5 ? 1 : Math.max(0, 1 - (t - 0.5) * 2.2);
       }
-      return { pos, lane: e.lane, opacity, color: shown[k].color, ...labels(k, shown[k]) };
+      return { pos, lane: e.lane, opacity, color: shown[k].color, ...labels(shown[k]) };
     });
+  }
+
+  /* ---------- settings ---------- */
+  function toggleSettings(open: boolean = settingsMenu.hidden === true) {
+    settingsMenu.hidden = !open;
+    settingsBtn.classList.toggle("on", open);
+    labelBtns.forEach((b, i) => b.classList.toggle("on", (i === 0) === (qubitLabels === "amplitudes")));
+  }
+
+  function setQubitLabels(mode: typeof qubitLabels) {
+    qubitLabels = mode;
+    saveSettings({ qubitLabels });
+    toggleSettings(true);
+    view.drawQubits(qubitRenders());
+  }
+
+  function onDocClick(e: MouseEvent) {
+    if (!settingsMenu.hidden && !(e.target instanceof Node && settingsMenu.parentElement!.contains(e.target))) toggleSettings(false);
   }
 
   /* ---------- text box ---------- */
@@ -327,7 +356,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     }
     if (!st) return `q${k + 1} · lane ${e.lane + 1} · P(0) = ${p0}`;
     const [t, p] = formatBloch(blochAngles(st[0], st[1]));
-    return `q${k + 1} · ${formatComplex(st[0])}|0⟩ + ${formatComplex(st[1])}|1⟩ · ${t}, ${p} · P(0) = ${p0} → ${formatReal(sim.state.marginalP0(k) * 100)} damage · click to switch`;
+    return `q${k + 1} · ${formatComplex(st[0])}|0⟩ + ${formatComplex(st[1])}|1⟩ · ${t}, ${p} · P(0) = ${p0} → ${formatReal(sim.state.marginalP0(k) * 100)} damage`;
   }
 
   /* ---------- rendering ---------- */
@@ -531,6 +560,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       e.preventDefault();
       if (mode !== "done") togglePlay();
     } else if (e.key === "Escape") {
+      toggleSettings(false);
       selected = null;
       renderBoard();
     } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
@@ -557,6 +587,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   ro.observe(wrap);
   relayout();
   window.addEventListener("keydown", onKey);
+  document.addEventListener("pointerdown", onDocClick);
   raf = requestAnimationFrame(frame);
 
   return () => {
@@ -565,6 +596,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     clearTimeout(warnTimer);
     ro.disconnect();
     window.removeEventListener("keydown", onKey);
+    document.removeEventListener("pointerdown", onDocClick);
   };
 }
 

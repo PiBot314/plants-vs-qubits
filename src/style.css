@@ -152,6 +152,24 @@ button.icon { width: 2.6em; height: 2.6em; padding: 0; display: grid; place-item
 .textbox .msg.warn { color: var(--danger); }
 .textbox .pager { font-family: var(--mono); font-size: 0.75rem; color: var(--dim); display: flex; align-items: center; gap: 0.5rem; }
 .textbox .pager button { padding: 0.2em 0.6em; }
+.settings { position: relative; }
+.settings > .icon.on { border-color: var(--accent); color: var(--accent); }
+.settings-menu {
+  position: absolute; right: 0; top: calc(100% + 0.5rem); z-index: 9;
+  min-width: 15rem; padding: 0.9rem 1rem;
+  background: rgba(14, 17, 44, 0.96);
+  border: 1px solid var(--line-strong); border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  display: flex; flex-direction: column; gap: 0.55rem;
+  animation: fadein 0.15s ease;
+}
+.settings-menu[hidden] { display: none; }
+.settings-title { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim); }
+.seg { display: flex; }
+.seg button { flex: 1; padding: 0.4em 0.7em; font-size: 0.85rem; border-radius: 0; }
+.seg button:first-child { border-radius: 8px 0 0 8px; }
+.seg button:last-child { border-radius: 0 8px 8px 0; border-left: none; }
+.seg button.on { border-color: var(--accent); color: var(--accent); background: rgba(111, 227, 255, 0.12); }
 .controls { display: flex; align-items: center; gap: 0.6rem; }
 .controls .play { width: 2.9em; height: 2.9em; font-size: 1.65rem; border-radius: 50%; border-width: 2px; box-shadow: 0 0 16px rgba(111, 227, 255, 0.3); }
 
