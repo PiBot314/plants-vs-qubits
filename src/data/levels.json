@@ -7,9 +7,7 @@
     "budget": 3,
     "optimalCost": 2,
     "gates": [
-      { "type": "X", "cost": 2 },
-      { "type": "H", "cost": 1 },
-      { "type": "Z", "cost": 1 }
+      { "type": "X", "cost": 2 }
     ],
     "enemies": [
       { "amplitudes": ["1", "0"], "lane": 0, "time": 0 },
@@ -19,18 +17,19 @@
   {
     "id": 2,
     "name": "Spooky Pair (dummy)",
-    "lanes": 2,
+    "lanes": 3,
     "columns": 4,
-    "budget": 6,
-    "optimalCost": 4,
+    "budget": 5,
+    "optimalCost": 3,
     "gates": [
-      { "type": "X", "cost": 3 },
-      { "type": "H", "cost": 1 },
-      { "type": "CNOT", "cost": 1 }
+      { "type": "X", "cost": 1 },
+      { "type": "Y", "cost": 1 },
+      { "type": "Z", "cost": 1 }
     ],
     "enemies": [
       { "amplitudes": ["1", "0"], "lane": 0, "time": 0 },
-      { "amplitudes": ["1", "0"], "lane": 1, "time": 0 }
+      { "amplitudes": ["1", "0"], "lane": 1, "time": 1 },
+      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 2, "time": 2 }
     ]
   },
   {

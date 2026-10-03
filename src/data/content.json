@@ -1,9 +1,15 @@
 [
-  { "level": 1, "when": "start", "text": "Incoming qubit! Every enemy flies in from the right in state α|0⟩ + β|1⟩. The top number on each qubit is α, the bottom is β." },
-  { "level": 1, "when": "start", "text": "When a qubit reaches the left edge you lose P(0) × 100 HP, where P(0) = |α|². Turn every qubit into |1⟩ to stay safe." },
-  { "level": 1, "when": "start", "text": "Pick a gate from the top bar and click a grid line to place it. Right-click a gate to remove it. Press ▶ when you're ready." },
-  { "level": 1, "when": "end", "text": "Nicely flipped! A gate acts on every qubit that passes through it, so one well-placed gate can handle a whole lane." },
-  { "level": 2, "when": "start", "text": "Dummy level: two lanes, one CNOT. Binary gates sit on corners and act on the two qubits that cross them together." },
-  { "level": 2, "when": "end", "text": "Dummy end text for level 2." },
+  { "level": 1, "when": "start", "text": "Oh no, wild Qubits have found us! Let's understand our enemy before we defend ourselves." },
+  { "level": 1, "when": "start", "text": "See that strange | ⟩ notation? That just holds the state of the qubit. If a dangerous |0⟩ slips past our defenses, we lose HP!" },
+  { "level": 1, "when": "start", "text": "Our goal is to flip them into harmless |1⟩ states so we don't take damage." },
+  { "level": 1, "when": "start", "text": "Grab the X flipper from the top bar! It magically flips a |0⟩ into a |1⟩ as the enemy passes through." },
+  { "level": 1, "when": "start", "text": "Click a grid line to place your X flipper. Right-click if you want to remove it. Press ▶ when you're ready!" },
+  { "level": 1, "when": "end", "text": "Perfect! A gate acts on every qubit that passes through it, so one well-placed gate can handle a whole lane." },
+  { "level": 2, "when": "start", "text": "Great job stopping those Qubits! By the way, those flippers you used? In quantum mechanics, they are actually called 'gates'." },
+  { "level": 2, "when": "start", "text": "Mathematically, the X gate swaps the |0⟩ and |1⟩ amplitudes (the α and β). This is like spinning the sphere completely upside down around the X-axis." },
+  { "level": 2, "when": "start", "text": "The Y gate spins it around the Y-axis. Mathematically, it also swaps the amplitudes, but multiplies them by the imaginary numbers -i and i!" },
+  { "level": 2, "when": "start", "text": "The Z gate just spins the sphere around its equator, leaving the probabilities the same but multiplying the bottom number by -1." },
+  { "level": 2, "when": "start", "text": "Look out! We have 3 lanes now. Try putting exactly one gate (X, Y, and Z) in each lane to see how they affect the qubits! You might take a little damage, but you'll survive!" },
+  { "level": 2, "when": "end", "text": "You survived! Notice how multiplying by -1 couldn't block the damage for states on the equator? We'll need a new trick for that next." },
   { "level": 3, "when": "start", "text": "Dummy level: phases matter once a Hadamard turns them into amplitudes." }
 ]
