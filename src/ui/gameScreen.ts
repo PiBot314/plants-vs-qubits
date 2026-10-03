@@ -65,6 +65,8 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   let colors = tracker.update(sim.state);
   let shown: QubitLook[] = [];
   let anim: TickAnim | null = null;
+  /** A single tick requested with the step button is running. */
+  let stepping = false;
   let hp = START_HP;
 
   // Every dialogue page seen this visit; the bottom text box pages through these.
@@ -124,6 +126,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   });
   const undoBtn = h("button", { class: "icon", title: "Undo (Ctrl+Z)", onclick: () => undo() }, "↶");
   const restartBtn = h("button", { class: "icon", title: "Restart: clear all gates", onclick: () => restart() }, "⟲");
+  const stepBtn = h("button", { class: "icon", title: "Step one tick (→)", onclick: () => stepOnce() }, "⏭\uFE0E");
   const playBtn = h("button", { class: "icon primary play", title: "Play / pause (Space)", onclick: () => togglePlay() }, "▶");
 
   const screen = h(
@@ -145,7 +148,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       { class: "bottombar" },
       h("label", { class: "speed" }, speedLabel, speedInput),
       h("div", { class: "textbox" }, msgEl, pager),
-      h("div", { class: "controls" }, undoBtn, restartBtn, playBtn),
+      h("div", { class: "controls" }, undoBtn, restartBtn, stepBtn, playBtn),
     ),
   );
   root.append(screen);
@@ -372,6 +375,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     speedLabel.textContent = `Speed ${SPEEDS[speedIdx]}×`;
     undoBtn.disabled = mode !== "edit" || !board.canUndo;
     playBtn.textContent = mode === "playing" ? "❚❚" : "▶";
+    stepBtn.disabled = mode === "done" || stepping;
   }
 
   function renderBoard() {
@@ -405,6 +409,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   function resetRun() {
     mode = "edit";
     anim = null;
+    stepping = false;
     sim = new Simulation(level, []);
     tracker = trackerFor(level);
     colors = tracker.update(sim.state);
@@ -423,16 +428,29 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     renderBoard();
   }
 
+  function startRun() {
+    sim = new Simulation(
+      level,
+      board.placements.map((p) => ({ ...p })),
+    );
+    selected = null;
+  }
+
   function togglePlay() {
     if (mode === "edit") {
-      sim = new Simulation(
-        level,
-        board.placements.map((p) => ({ ...p })),
-      );
-      selected = null;
+      startRun();
       mode = "playing";
     } else if (mode === "playing") mode = "paused";
     else if (mode === "paused") mode = "playing";
+    renderBoard();
+  }
+
+  /** Advances exactly one tick and pauses; while playing, pauses at the end of the current tick. */
+  function stepOnce() {
+    if (mode === "done" || stepping) return;
+    if (mode === "edit") startRun();
+    mode = "paused";
+    stepping = true;
     renderBoard();
   }
 
@@ -535,7 +553,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     const dt = Math.min(100, now - last);
     last = now;
     // Open dialogues/modals pause the run.
-    if (mode === "playing" && !modalOpen()) {
+    if ((mode === "playing" || stepping) && !modalOpen()) {
       if (!anim) beginTick();
       const a = anim!;
       a.t += dt / (BASE_TICK_MS / SPEEDS[speedIdx]);
@@ -547,6 +565,8 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       view.drawQubits(qubitRenders());
       if (a.t >= 1) {
         anim = null;
+        stepping = false;
+        renderHud();
         if (sim.outcome !== "running") finish(sim.outcome);
       }
     }
@@ -559,6 +579,9 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     if (e.key === " ") {
       e.preventDefault();
       if (mode !== "done") togglePlay();
+    } else if (e.key === "ArrowRight" || e.key === ".") {
+      e.preventDefault();
+      stepOnce();
     } else if (e.key === "Escape") {
       toggleSettings(false);
       selected = null;
