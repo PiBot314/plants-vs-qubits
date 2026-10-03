@@ -1,0 +1,137 @@
+[
+  {
+    "id": "qubit", "term": "Qubit", "category": "Concept", "level": 1,
+    "text": "A quantum bit. A classical bit is either 0 or 1; a qubit can be in a blend of both at once, written α|0⟩ + β|1⟩. Every enemy in Bloch It! is a single qubit.",
+    "wiki": "https://en.wikipedia.org/wiki/Qubit"
+  },
+  {
+    "id": "ket", "term": "Ket notation  |ψ⟩", "category": "Notation", "level": 1,
+    "text": "The angled bracket |…⟩ is called a 'ket'. It's how physicists write a quantum state: |0⟩ is 'the state zero', |ψ⟩ is 'some state ψ'. Part of Dirac's bra–ket notation.",
+    "wiki": "https://en.wikipedia.org/wiki/Bra%E2%80%93ket_notation"
+  },
+  {
+    "id": "basis", "term": "Basis states |0⟩ and |1⟩", "category": "Concept", "level": 1,
+    "text": "The two states a qubit can be measured as. Any qubit state is a combination α|0⟩ + β|1⟩ of these two. In this game |0⟩ hurts you and |1⟩ is harmless.",
+    "wiki": "https://en.wikipedia.org/wiki/Qubit#Standard_representation"
+  },
+  {
+    "id": "bloch", "term": "Bloch sphere", "category": "Concept", "level": 1,
+    "text": "A way to picture any single-qubit state as an arrow on a sphere. |0⟩ points to the north pole, |1⟩ to the south pole, and equal mixes like |+⟩ lie on the equator. Every single-qubit gate is a rotation of this sphere.",
+    "wiki": "https://en.wikipedia.org/wiki/Bloch_sphere"
+  },
+  {
+    "id": "x", "term": "Pauli-X gate", "category": "Gate", "level": 1,
+    "text": "The quantum NOT. It swaps the two amplitudes: α|0⟩ + β|1⟩ → β|0⟩ + α|1⟩. On the Bloch sphere it is a half turn (180°) around the x-axis.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Pauli_gates_(X,Y,Z)"
+  },
+  {
+    "id": "measurement", "term": "Measurement", "category": "Concept", "level": 2,
+    "text": "Looking at a qubit forces it to pick: it comes out as |0⟩ or |1⟩, at random, with probabilities set by its amplitudes. Your base measures each qubit that reaches it.",
+    "wiki": "https://en.wikipedia.org/wiki/Measurement_in_quantum_mechanics"
+  },
+  {
+    "id": "collapse", "term": "Wavefunction collapse", "category": "Concept", "level": 2,
+    "text": "After a measurement the qubit is no longer in a blend. It has 'collapsed' into whichever result was seen, and its old amplitudes are gone.",
+    "wiki": "https://en.wikipedia.org/wiki/Wave_function_collapse"
+  },
+  {
+    "id": "amplitude", "term": "Probability amplitude", "category": "Concept", "level": 2,
+    "text": "The numbers α and β in α|0⟩ + β|1⟩. They can be negative or even complex, so they are not probabilities themselves; their squared sizes are. In the game, α is the top number on a qubit and β the bottom.",
+    "wiki": "https://en.wikipedia.org/wiki/Probability_amplitude"
+  },
+  {
+    "id": "born", "term": "Born rule", "category": "Concept", "level": 2,
+    "text": "The chance of measuring |0⟩ is |α|² and of measuring |1⟩ is |β|². They always add up to 1. Your HP loss for each qubit is P(0) × 100 = |α|² × 100.",
+    "wiki": "https://en.wikipedia.org/wiki/Born_rule"
+  },
+  {
+    "id": "gate", "term": "Quantum logic gate", "category": "Concept", "level": 2,
+    "text": "An operation that changes a qubit's state without measuring it. Gates are always reversible, and they never change the total probability. On the Bloch sphere, single-qubit gates are rotations.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate"
+  },
+  {
+    "id": "y", "term": "Pauli-Y gate", "category": "Gate", "level": 2,
+    "text": "Swaps the amplitudes like X, but also multiplies them by −i and i: α|0⟩ + β|1⟩ → −iβ|0⟩ + iα|1⟩. On the Bloch sphere it is a half turn around the y-axis.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Pauli_gates_(X,Y,Z)"
+  },
+  {
+    "id": "z", "term": "Pauli-Z gate", "category": "Gate", "level": 2,
+    "text": "The phase flip. It multiplies the |1⟩ amplitude by −1 and leaves |0⟩ alone, so the probabilities don't change. On the Bloch sphere it is a half turn around the vertical z-axis.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Pauli_gates_(X,Y,Z)"
+  },
+  {
+    "id": "imaginary", "term": "Imaginary unit  i", "category": "Maths", "level": 2,
+    "text": "The number i with i² = −1. Amplitudes can be complex numbers like i/√2. Multiplying by i doesn't change a number's size, so it doesn't change any probability on its own.",
+    "wiki": "https://en.wikipedia.org/wiki/Imaginary_unit"
+  },
+  {
+    "id": "superposition", "term": "Superposition", "category": "Concept", "level": 3,
+    "text": "A state with both α and β non-zero, such as 1/√2|0⟩ + 1/√2|1⟩. It isn't 'secretly 0 or 1': the two parts can interfere with each other until it's measured.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_superposition"
+  },
+  {
+    "id": "h", "term": "Hadamard gate", "category": "Gate", "level": 3,
+    "text": "Mixes the two amplitudes: |0⟩ → |+⟩ and |1⟩ → |−⟩, and back again. On the Bloch sphere it is a half turn around the diagonal axis between x and z.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Hadamard_gate"
+  },
+  {
+    "id": "interference", "term": "Quantum interference", "category": "Concept", "level": 3,
+    "text": "When a gate adds amplitudes together, equal signs reinforce and opposite signs cancel. This is how quantum algorithms make wrong answers vanish.",
+    "wiki": "https://en.wikipedia.org/wiki/Wave_interference#Quantum_interference"
+  },
+  {
+    "id": "phase", "term": "Relative phase", "category": "Concept", "level": 4,
+    "text": "The sign (or complex angle) between α and β. |+⟩ and |−⟩ have identical probabilities but opposite phase. Measurement can't see it directly, but an H gate turns it into a real difference.",
+    "wiki": "https://en.wikipedia.org/wiki/Phase_factor"
+  },
+  {
+    "id": "plusminus", "term": "|+⟩ and |−⟩", "category": "Notation", "level": 4,
+    "text": "|+⟩ = 1/√2|0⟩ + 1/√2|1⟩ and |−⟩ = 1/√2|0⟩ − 1/√2|1⟩. They sit on opposite sides of the Bloch sphere's equator, and H turns them into |0⟩ and |1⟩.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Hadamard_gate"
+  },
+  {
+    "id": "unitary", "term": "Unitary", "category": "Maths", "level": 5,
+    "text": "Mathematically, every quantum gate is a unitary matrix: it preserves the total probability |α|² + |β|² = 1, and it can always be undone.",
+    "wiki": "https://en.wikipedia.org/wiki/Unitary_matrix"
+  },
+  {
+    "id": "i", "term": "Identity gate", "category": "Gate", "level": null,
+    "text": "Does nothing at all. The state passes through unchanged.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Identity_gate"
+  },
+  {
+    "id": "s", "term": "S gate", "category": "Gate", "level": null,
+    "text": "Multiplies the |1⟩ amplitude by i: a quarter turn around the z-axis. Two S gates make a Z.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Phase_shift"
+  },
+  {
+    "id": "t", "term": "T gate", "category": "Gate", "level": null,
+    "text": "Multiplies the |1⟩ amplitude by e^{iπ/4}: an eighth turn around the z-axis. Two T gates make an S.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Phase_shift"
+  },
+  {
+    "id": "p", "term": "Phase gate  P(φ)", "category": "Gate", "level": null,
+    "text": "Multiplies the |1⟩ amplitude by e^{iφ}: a turn of angle φ around the z-axis. Z, S and T are P(π), P(π/2) and P(π/4).",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Phase_shift"
+  },
+  {
+    "id": "cnot", "term": "CNOT gate", "category": "Gate", "level": null,
+    "text": "A two-qubit gate. It flips the target (⊕) qubit only when the control (●) qubit is |1⟩. If the control is in a superposition, the two qubits become entangled.",
+    "wiki": "https://en.wikipedia.org/wiki/Controlled_NOT_gate"
+  },
+  {
+    "id": "cz", "term": "CZ gate", "category": "Gate", "level": null,
+    "text": "A two-qubit gate. It multiplies the |11⟩ amplitude by −1. Which qubit is the control doesn't matter.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Controlled_gates"
+  },
+  {
+    "id": "entanglement", "term": "Entanglement", "category": "Concept", "level": null,
+    "text": "Two qubits are entangled when their joint state can't be split into one state for each. They no longer have amplitudes of their own, so the game colours them as a group and shows P(1) instead.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_entanglement"
+  },
+  {
+    "id": "bell", "term": "Bell state", "category": "Concept", "level": null,
+    "text": "A maximally entangled pair, such as 1/√2|00⟩ + 1/√2|11⟩. Measuring one qubit instantly tells you what the other will be.",
+    "wiki": "https://en.wikipedia.org/wiki/Bell_state"
+  }
+]

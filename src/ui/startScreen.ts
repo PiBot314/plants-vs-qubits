@@ -2,6 +2,7 @@ import type { Navigate } from "../main";
 import { LEVELS } from "../game/level";
 import { isUnlocked, loadProgress, totalStars } from "../game/progress";
 import { Cleanup, h, s } from "./dom";
+import { openEncyclopedia } from "./encyclopedia";
 
 /** A small Bloch sphere whose state vector slowly precesses. */
 function blochSphere(): { el: SVGSVGElement; stop: () => void } {
@@ -61,6 +62,7 @@ export function mountStart(root: HTMLElement, navigate: Navigate): Cleanup {
         { class: "menu" },
         h("button", { class: "primary", onclick: () => navigate({ name: "game", id: target.id }) }, save.completed.length ? "Continue" : "Play"),
         h("button", { onclick: () => navigate({ name: "levels" }) }, "Level Select"),
+        h("button", { onclick: () => openEncyclopedia(root) }, "Encyclopedia"),
       ),
       h("div", { class: "star-count" }, `★ ${totalStars(save)} / ${LEVELS.length}`),
     ),

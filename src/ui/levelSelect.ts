@@ -2,6 +2,7 @@ import type { Navigate } from "../main";
 import { LEVELS } from "../game/level";
 import { isUnlocked, loadProgress, totalStars } from "../game/progress";
 import { Cleanup, h } from "./dom";
+import { openEncyclopedia } from "./encyclopedia";
 
 export function mountLevelSelect(root: HTMLElement, navigate: Navigate): Cleanup {
   const save = loadProgress();
@@ -37,6 +38,7 @@ export function mountLevelSelect(root: HTMLElement, navigate: Navigate): Cleanup
         h("button", { class: "icon", title: "Back", onclick: () => navigate({ name: "start" }) }, "←"),
         h("h2", {}, "LEVELS"),
         h("div", { class: "star-count" }, `★ ${totalStars(save)} / ${LEVELS.length}`),
+        h("button", { class: "icon", title: "Encyclopedia", onclick: () => openEncyclopedia(root) }, "Ψ"),
       ),
       h("div", { class: "level-grid" }, ...cards),
     ),

@@ -9,7 +9,10 @@ import { formatComplex, formatKetSum, formatReal } from "../quantum/format";
 import { BoardView, QubitRender } from "./boardView";
 import { Dialogue, openDialogue } from "./dialogue";
 import { Cleanup, h } from "./dom";
+import { openEncyclopedia } from "./encyclopedia";
 import { modalOpen } from "./modal";
+import { richText } from "./richText";
+import { discoverForLevel, hasUnseen } from "../game/encyclopedia";
 
 const SPEEDS = [0.25, 0.5, 1, 2, 4];
 const BASE_TICK_MS = 900;
@@ -74,6 +77,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       h("span", { class: "cost" }, h("span", { class: "coin" }), String(g.cost)),
     ),
   );
+  const encyBtn = h("button", { class: "icon", title: "Encyclopedia", onclick: () => openEncy() }, "Ψ");
   const hpFill = h("div", { class: "fill" });
   const hpLabel = h("div", { class: "label" });
   const wrap = h("div", { class: "board-wrap" });
@@ -101,6 +105,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       { class: "topbar" },
       h("div", { class: "coins", title: "Coins left" }, h("span", { class: "coin" }), coinsEl),
       h("div", { class: "gate-bar" }, ...chips),
+      encyBtn,
       h("button", { class: "icon", title: "Exit to level select", onclick: () => navigate({ name: "levels" }) }, "✕"),
     ),
     h("div", { class: "hpbar" }, hpFill, hpLabel),
@@ -174,7 +179,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       return;
     }
     msgEl.className = "msg";
-    msgEl.textContent = log[msgIdx];
+    msgEl.replaceChildren(richText(log[msgIdx], screen, refreshEncyBadge));
     pager.style.visibility = "visible";
     pageEl.textContent = `${msgIdx + 1}/${log.length}`;
     prevBtn.disabled = msgIdx === 0;
@@ -184,6 +189,16 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   function page(d: number) {
     msgIdx = Math.max(0, Math.min(log.length - 1, msgIdx + d));
     renderText();
+  }
+
+  /* ---------- encyclopedia ---------- */
+  function refreshEncyBadge() {
+    encyBtn.classList.toggle("has-new", hasUnseen());
+  }
+
+  function openEncy() {
+    hint = null;
+    openEncyclopedia(screen, { onClose: refreshEncyBadge });
   }
 
   /* ---------- dialogue ---------- */
@@ -203,6 +218,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     dialogue = openDialogue(screen, log, {
       title: `Level ${level.id} · ${level.name}`,
       start,
+      render: (t) => richText(t, screen, refreshEncyBadge),
       onClose: (last) => {
         dialogue = null;
         msgIdx = last;
@@ -435,7 +451,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
           won && !star ? h("div", {}, `An optimal solution costs ${level.optimalCost}. Find it for a ★`) : null,
           !won ? h("div", {}, "Every qubit hitting the left edge costs P(0) × 100 HP.") : null,
         ),
-        ...endText.map((t) => h("p", { class: "story" }, t)),
+        ...endText.map((t) => h("p", { class: "story" }, richText(t, screen, refreshEncyBadge))),
         h("div", { class: "buttons" }, ...buttons),
       ),
     );
@@ -486,6 +502,11 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
 
   /* ---------- mount ---------- */
   shown = looks();
+  const newTerms = discoverForLevel(level.id);
+  if (newTerms.length) {
+    screen.append(h("div", { class: "toast" }, `Ψ New in the encyclopedia: ${newTerms.map((e) => e.term).join(", ")}`));
+  }
+  refreshEncyBadge();
   const startText = getContent(level.id, "start");
   // Pop the intro up until the level has been beaten once; afterwards it only lives in the text box.
   say(startText.length ? startText : DEFAULT_TEXT, startText.length > 0 && !loadProgress().completed.includes(level.id));

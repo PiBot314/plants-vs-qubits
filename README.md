@@ -80,6 +80,23 @@ Each trigger fires once per visit to a level. Every page shown also goes into th
 text box at the bottom, where the player can page back through it or reopen the
 centred dialogue with ⤢.
 
+Text can link to encyclopedia entries with `[[id]]` or `[[id|label]]`, e.g.
+`"Grab the [[x|X flipper]]!"`. Links show up once the entry has been discovered;
+before that they render as plain text.
+
+### `encyclopedia.json`: quantum terms
+
+```json
+{ "id": "bloch", "term": "Bloch sphere", "category": "Concept", "level": 1,
+  "text": "...", "wiki": "https://en.wikipedia.org/wiki/Bloch_sphere" }
+```
+
+Entries are numbered in file order, Pokédex-style. An entry is discovered when the
+player starts its `level` or any later level. `"level": null` keeps it as "???" until
+a level introduces it. Discovered entries the player hasn't opened yet get a NEW
+tag and light a dot on the in-game Ψ button. `npm test` checks that every content
+link points at a real entry that's unlocked by that level.
+
 ### `gates.json`
 
 Holds the display name, default cost and help text for each gate type.

@@ -2,7 +2,7 @@ import { SaveData } from "./types";
 
 const KEY = "blochit.save";
 
-const fresh = (): SaveData => ({ unlocked: [1], completed: [], starred: [] });
+const fresh = (): SaveData => ({ unlocked: [1], completed: [], starred: [], discovered: [], seen: [] });
 
 export function loadProgress(): SaveData {
   try {
@@ -13,6 +13,8 @@ export function loadProgress(): SaveData {
       unlocked: Array.from(new Set([1, ...(d.unlocked ?? [])])),
       completed: d.completed ?? [],
       starred: d.starred ?? [],
+      discovered: d.discovered ?? [],
+      seen: d.seen ?? [],
     };
   } catch {
     return fresh();
@@ -37,6 +39,24 @@ export function recordWin(levelId: number, starred: boolean, nextId?: number): S
   if (nextId !== undefined) d.unlocked = addUnique(d.unlocked, nextId);
   save(d);
   return d;
+}
+
+/** Marks encyclopedia entries as discovered; returns the ids that are new. */
+export function discover(ids: string[]): string[] {
+  const d = loadProgress();
+  const fresh = ids.filter((id) => !d.discovered.includes(id));
+  if (fresh.length) {
+    d.discovered = [...d.discovered, ...fresh];
+    save(d);
+  }
+  return fresh;
+}
+
+export function markSeen(id: string): void {
+  const d = loadProgress();
+  if (d.seen.includes(id)) return;
+  d.seen = [...d.seen, id];
+  save(d);
 }
 
 export const totalStars = (d: SaveData) => d.starred.length;

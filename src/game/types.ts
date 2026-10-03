@@ -86,8 +86,22 @@ export interface Placement {
   flipped: boolean;
 }
 
+export interface EncyclopediaEntry {
+  id: string;
+  term: string;
+  category: string;
+  /** Level that introduces the term; null = not in the game yet. */
+  level: number | null;
+  text: string;
+  wiki: string;
+}
+
 export interface SaveData {
   unlocked: number[];
   completed: number[];
   starred: number[];
+  /** Encyclopedia entries the player has unlocked. */
+  discovered: string[];
+  /** Discovered entries the player has opened (the rest show as "new"). */
+  seen: string[];
 }

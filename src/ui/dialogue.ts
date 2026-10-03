@@ -5,6 +5,8 @@ export interface DialogueOptions {
   title?: string;
   /** Page to open on. */
   start?: number;
+  /** Renders a page's text (defaults to plain text). */
+  render?: (text: string) => Node;
   onClose?: (lastPage: number) => void;
 }
 
@@ -36,7 +38,7 @@ export function openDialogue(parent: HTMLElement, pages: string[], opts: Dialogu
   );
 
   function render() {
-    body.replaceChildren(h("p", { class: "dlg-text" }, pages[idx]));
+    body.replaceChildren(h("p", { class: "dlg-text" }, opts.render ? opts.render(pages[idx]) : pages[idx]));
     dots.replaceChildren(
       ...pages.map((_, i) => h("span", { class: `dlg-dot${i === idx ? " on" : i < idx ? " seen" : ""}` })),
     );
