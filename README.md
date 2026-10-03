@@ -72,4 +72,24 @@ level-complete dialog.
 
 Holds the display name, default cost and help text for each gate type.
 
-Levels 2 and 3 are placeholder dummies. Replace them with real levels.
+## Pedagogical Level Design
+
+The levels are designed to introduce quantum mechanics incrementally, without ever feeling like a lecture.
+
+- **Level 1 – First Flip**: Introduces the `|0⟩`/`|1⟩` notation, the HP system, and the X gate as a
+  "flipper" without calling it a gate. One lane, two identical enemies. The single available
+  gate (X) makes the solution obvious. The end card formally names it a "gate."
+
+- **Level 2 – The Three Axes**: Introduces X, Y, and Z as gates that spin the qubit sphere
+  around three different axes. Players are invited to **watch the displayed amplitudes
+  change in real-time** as each gate is applied. A key insight is revealed: X and Y both
+  block damage (the top amplitude becomes 0), but their output numbers look different due
+  to the imaginary multipliers. Z changes the bottom number by −1 but leaves the top
+  untouched — so it doesn't reduce damage yet. This seeds curiosity: *the numbers changed,
+  but it didn't help... why would Z ever matter?*
+
+- **Level 3 – Phase Space** *(coming soon)*: Introduces the Hadamard gate, which mixes the
+  top and bottom amplitudes together. Now Z's −1 twist *does* affect the top amplitude
+  after an H, making phase differences visible as damage differences for the first time.
+
+Level 3 is a placeholder dummy. Replace it with a real level.

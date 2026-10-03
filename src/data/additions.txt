@@ -1,0 +1,4 @@
+1. quantum encyclopedia
+2. toggle for amplitudes/bloch angles
+3. make play button bigger
+4. make
