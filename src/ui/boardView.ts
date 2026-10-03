@@ -261,6 +261,11 @@ export class BoardView {
     });
   }
 
+  /** Screen rectangle of qubit k's circle. */
+  qubitRect(k: number): DOMRect {
+    return this.qubitEls[k].circle.getBoundingClientRect();
+  }
+
   flash(placementId: number): void {
     const g = this.gateEls.get(placementId);
     if (!g) return;

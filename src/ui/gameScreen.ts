@@ -16,6 +16,8 @@ import { discoverForLevel, hasUnseen } from "../game/encyclopedia";
 import { blochAngles, formatBloch} from "../quantum/format";
 import { loadSettings, saveSettings } from "../game/settings";
 import { Complex } from "../quantum/complex";
+import { blochVector, norm, Vec3 } from "../quantum/bloch";
+import { Sphere } from "./blochView";
 
 const SPEEDS = [0.25, 0.5, 1, 2, 4];
 const BASE_TICK_MS = 900;
@@ -27,6 +29,8 @@ interface QubitLook {
   color: string;
   state: [Complex, Complex] | null;  // null → entangled/mixed: no single-qubit state
   p1: number;
+  /** Bloch vector; shorter than 1 when the qubit is entangled. */
+  vec: Vec3;
 }
 
 interface TickAnim {
@@ -175,7 +179,11 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       renderBoard();
     },
     onGateHover: (id) => setHint(id === null ? null : placedHint(id)),
-    onQubitHover: (k) => setHint(k === null ? null : qubitHint(k)),
+    onQubitHover: (k) => {
+      hovered = k;
+      setHint(k === null ? null : qubitHint(k));
+      renderHover();
+    },
   });
   wrap.append(view.el);
 
@@ -189,6 +197,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       color: col ?? QUBIT_PURPLE,
       state: st ? [st[0], st[1]] : null,
       p1: 1 - sim.state.marginalP0(k),
+      vec: blochVector(sim.state, k),
     };
   }
   
@@ -212,6 +221,43 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       }
       return { pos, lane: e.lane, opacity, color: shown[k].color, ...labels(shown[k]) };
     });
+  }
+
+  /* ---------- Bloch sphere on hover ---------- */
+  let hovered: number | null = null;
+  const hoverSphere = new Sphere();
+  const hoverName = h("div", { class: "qb-name" });
+  const hoverInfo = h("div");
+  const hoverCard = h("div", { class: "qubit-bloch" }, hoverName, hoverSphere.el, hoverInfo);
+  hoverCard.hidden = true;
+  screen.append(hoverCard);
+
+  /** Shows the hovered qubit's Bloch sphere above it, following it while it moves. */
+  function renderHover() {
+    const k = hovered;
+    // Qubits that have left the board are hidden without a mouseleave, so check the circle is still drawn.
+    const q = k === null ? null : view.qubitRect(k);
+    if (k === null || !q || q.width === 0) {
+      hoverCard.hidden = true;
+      return;
+    }
+    const lk = shown[k];
+    hoverSphere.set(lk.vec);
+    hoverName.textContent = `q${k + 1}`;
+    hoverName.style.color = lk.color;
+    hoverInfo.textContent = lk.state
+      ? formatBloch(blochAngles(lk.state[0], lk.state[1])).join(", ")
+      : `entangled · |r| = ${formatReal(norm(lk.vec))}`;
+    hoverCard.hidden = false;
+    const box = screen.getBoundingClientRect();
+    const w = hoverCard.offsetWidth;
+    const ht = hoverCard.offsetHeight;
+    let left = q.left + q.width / 2 - w / 2 - box.left;
+    let top = q.top - ht - 10 - box.top;
+    if (top < 4) top = q.bottom + 10 - box.top; // no room above: show it below
+    left = Math.max(4, Math.min(box.width - w - 4, left));
+    hoverCard.style.left = `${left}px`;
+    hoverCard.style.top = `${top}px`;
   }
 
   /* ---------- settings ---------- */
@@ -563,6 +609,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
         if (modalOpen()) a.t = 0.5;
       }
       view.drawQubits(qubitRenders());
+      if (hovered !== null) renderHover();
       if (a.t >= 1) {
         anim = null;
         stepping = false;

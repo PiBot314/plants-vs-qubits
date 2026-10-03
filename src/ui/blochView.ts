@@ -20,7 +20,7 @@ const depth = (v: Vec3) => dot(v, toward);
 const pts = (vs: Vec3[]) => vs.map((v) => proj(v).map((n) => n.toFixed(2)).join(",")).join(" ");
 
 /** One sphere: static frame plus a movable arrow, trail and optional rotation axis. */
-class Sphere {
+export class Sphere {
   readonly el: SVGSVGElement;
   private arrow = s("line", { class: "bv-arrow", x1: 0, y1: 0 });
   private tip = s("circle", { class: "bv-tip" });
