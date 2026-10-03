@@ -125,14 +125,23 @@ export function blochDemo(spec: BlochSpec): { el: HTMLElement; stop: () => void 
   if (gates.length === 1 && isBinary(gates[0])) {
     const gate = gates[0] as BinaryGateType;
     const from = (spec.from && Array.isArray(spec.from[0]) ? spec.from : [["1/sqrt2", "1/sqrt2"], ["1", "0"]]) as Amps[];
-    const st = spec.joint
-      ? StateVector.fromGroups(2, [{ qubits: [0, 1], amps: spec.joint.map((a) => parseComplex(a)) }])
-      : StateVector.fromProduct(from.slice(0, 2).map(parseAmps));
+    let st: StateVector;
+    if (spec.joint) {
+      const n = Math.log2(spec.joint.length);
+      if (!Number.isInteger(n) || n < 2) throw new Error(`bloch.joint needs 4, 8, 16… amplitudes, got ${spec.joint.length}`);
+      const qubits = Array.from({ length: n }, (_, i) => i);
+      st = StateVector.fromGroups(n, [{ qubits, amps: spec.joint.map((a) => parseComplex(a)) }]);
+    } else st = StateVector.fromProduct(from.slice(0, 2).map(parseAmps));
+    const [ctrl, tgt] = spec.on ?? [0, 1];
+    const all = Array.from({ length: st.n }, (_, i) => i);
     const before = ket(st);
-    const v0 = [blochVector(st, 0), blochVector(st, 1)];
-    applyBinary(st, gate, 0, 1);
-    const v1 = [blochVector(st, 0), blochVector(st, 1)];
-    const names = gate === "CZ" || gate === "SWAP" ? ["qubit 1", "qubit 2"] : ["control ●", gate === "CNOT" ? "target ⊕" : "target Y"];
+    const v0 = all.map((k) => blochVector(st, k));
+    applyBinary(st, gate, ctrl, tgt);
+    const v1 = all.map((k) => blochVector(st, k));
+    const symmetric = gate === "CZ" || gate === "SWAP";
+    const names = all.map((k) =>
+      symmetric || (k !== ctrl && k !== tgt) ? `qubit ${k + 1}` : k === ctrl ? "control ●" : gate === "CNOT" ? "target ⊕" : "target Y",
+    );
     const sp = names.map((n) => new Sphere(n));
     spheres.append(...sp.map((x) => x.el));
     const at = stateChain(captionTop, [before, ket(st)], [gate]);

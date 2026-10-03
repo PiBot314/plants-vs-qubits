@@ -4,7 +4,8 @@ import { GateType } from "../quantum/gates";
 /* ---------- Raw JSON shapes ---------- */
 
 export interface GateEntryData {
-  type: GateType;
+  /** A gate type, or an alias such as "CX" for CNOT. */
+  type: GateType | "CX";
   /** Overrides the default cost from gates.json. */
   cost?: number;
   /** Phase angle for P gates, e.g. "pi/8". */
@@ -60,8 +61,13 @@ export interface BlochSpec {
   angle?: string;
   /** Input state(s): one [α, β] per qubit. Defaults to |0⟩ (and |+⟩|0⟩ for two-qubit gates). */
   from?: Amps | Amps[];
-  /** Two-qubit gates only: an entangled starting state [|00⟩, |01⟩, |10⟩, |11⟩] (control on the left). */
+  /**
+   * Two-qubit gates only: an entangled starting state of 2, 3… qubits in ket order,
+   * e.g. [|00⟩, |01⟩, |10⟩, |11⟩] or 8 amplitudes for three qubits. One sphere per qubit.
+   */
   joint?: string[];
+  /** Two-qubit gates only: [control, target] qubit indices within `joint` (default [0, 1]). */
+  on?: [number, number];
   tour?: Amps[];
   caption?: string;
 }
