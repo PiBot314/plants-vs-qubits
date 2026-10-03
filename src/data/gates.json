@@ -8,5 +8,6 @@
   "T": { "name": "T (phase π/4)", "defaultCost": 1, "description": "Multiplies the |1⟩ amplitude by e^{iπ/4}." },
   "P": { "name": "Phase", "defaultCost": 1, "description": "Multiplies the |1⟩ amplitude by e^{iφ}." },
   "CNOT": { "name": "Controlled-NOT", "defaultCost": 2, "description": "Placed on a corner. Flips the target (⊕) qubit when the control (●) qubit is |1⟩. Both qubits must cross the corner together. Click a placed CNOT to swap control and target." },
-  "CZ": { "name": "Controlled-Z", "defaultCost": 2, "description": "Placed on a corner. Negates the |11⟩ amplitude of the two qubits crossing it together." }
+  "CZ": { "name": "Controlled-Z", "defaultCost": 2, "description": "Placed on a corner. Negates the |11⟩ amplitude of the two qubits crossing it together." },
+  "SWAP": { "name": "SWAP", "defaultCost": 3, "description": "Swaps the target and control qubits."}
 }
