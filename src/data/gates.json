@@ -1,0 +1,12 @@
+{
+  "I": { "name": "Identity", "defaultCost": 1, "description": "Does nothing. Sometimes doing nothing is a choice." },
+  "X": { "name": "Pauli-X", "defaultCost": 1, "description": "Bit flip: swaps the |0⟩ and |1⟩ amplitudes." },
+  "Y": { "name": "Pauli-Y", "defaultCost": 1, "description": "Bit and phase flip: α|0⟩+β|1⟩ → −iβ|0⟩ + iα|1⟩." },
+  "Z": { "name": "Pauli-Z", "defaultCost": 1, "description": "Phase flip: negates the |1⟩ amplitude." },
+  "H": { "name": "Hadamard", "defaultCost": 1, "description": "Rotates between the Z and X bases: |0⟩ → |+⟩, |1⟩ → |−⟩." },
+  "S": { "name": "S (phase π/2)", "defaultCost": 1, "description": "Multiplies the |1⟩ amplitude by i." },
+  "T": { "name": "T (phase π/4)", "defaultCost": 1, "description": "Multiplies the |1⟩ amplitude by e^{iπ/4}." },
+  "P": { "name": "Phase", "defaultCost": 1, "description": "Multiplies the |1⟩ amplitude by e^{iφ}." },
+  "CNOT": { "name": "Controlled-NOT", "defaultCost": 2, "description": "Placed on a corner. Flips the target (⊕) qubit when the control (●) qubit is |1⟩. Both qubits must cross the corner together. Click a placed CNOT to swap control and target." },
+  "CZ": { "name": "Controlled-Z", "defaultCost": 2, "description": "Placed on a corner. Negates the |11⟩ amplitude of the two qubits crossing it together." }
+}

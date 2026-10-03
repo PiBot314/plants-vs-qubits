@@ -1,0 +1,9 @@
+[
+  { "level": 1, "when": "start", "text": "Incoming qubit! Every enemy flies in from the right in state α|0⟩ + β|1⟩. The top number on each qubit is α, the bottom is β." },
+  { "level": 1, "when": "start", "text": "When a qubit reaches the left edge you lose P(0) × 100 HP, where P(0) = |α|². Turn every qubit into |1⟩ to stay safe." },
+  { "level": 1, "when": "start", "text": "Pick a gate from the top bar and click a grid line to place it. Right-click a gate to remove it. Press ▶ when you're ready." },
+  { "level": 1, "when": "end", "text": "Nicely flipped! A gate acts on every qubit that passes through it, so one well-placed gate can handle a whole lane." },
+  { "level": 2, "when": "start", "text": "Dummy level: two lanes, one CNOT. Binary gates sit on corners and act on the two qubits that cross them together." },
+  { "level": 2, "when": "end", "text": "Dummy end text for level 2." },
+  { "level": 3, "when": "start", "text": "Dummy level: phases matter once a Hadamard turns them into amplitudes." }
+]

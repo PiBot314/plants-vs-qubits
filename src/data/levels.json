@@ -1,0 +1,55 @@
+[
+  {
+    "id": 1,
+    "name": "First Flip",
+    "lanes": 1,
+    "columns": 4,
+    "budget": 3,
+    "optimalCost": 2,
+    "gates": [
+      { "type": "X", "cost": 2 },
+      { "type": "H", "cost": 1 },
+      { "type": "Z", "cost": 1 }
+    ],
+    "enemies": [
+      { "amplitudes": ["1", "0"], "lane": 0, "time": 0 },
+      { "amplitudes": ["1", "0"], "lane": 0, "time": 2 }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Spooky Pair (dummy)",
+    "lanes": 2,
+    "columns": 4,
+    "budget": 6,
+    "optimalCost": 4,
+    "gates": [
+      { "type": "X", "cost": 3 },
+      { "type": "H", "cost": 1 },
+      { "type": "CNOT", "cost": 1 }
+    ],
+    "enemies": [
+      { "amplitudes": ["1", "0"], "lane": 0, "time": 0 },
+      { "amplitudes": ["1", "0"], "lane": 1, "time": 0 }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Phase Space (dummy)",
+    "lanes": 2,
+    "columns": 5,
+    "budget": 6,
+    "optimalCost": 4,
+    "gates": [
+      { "type": "H", "cost": 1 },
+      { "type": "Z", "cost": 1 },
+      { "type": "S", "cost": 1 },
+      { "type": "P", "cost": 1, "angle": "pi/4" }
+    ],
+    "enemies": [
+      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 0, "time": 0 },
+      { "amplitudes": ["1/sqrt2", "i/sqrt2"], "lane": 1, "time": 1 },
+      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 0, "time": 3 }
+    ]
+  }
+]
