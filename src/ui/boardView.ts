@@ -129,7 +129,7 @@ export class BoardView {
       const opt = this.level.gates[p.option];
       const x = this.px(p.x);
       const g = s("g", {
-        class: "gate",
+        class: opt.binary ? "gate binary" : "gate",
         onclick: () => editable && this.handlers.onGateClick(p.id),
         oncontextmenu: (e: Event) => {
           e.preventDefault();
@@ -251,9 +251,11 @@ export class BoardView {
   flash(placementId: number): void {
     const g = this.gateEls.get(placementId);
     if (!g) return;
-    g.classList.remove("fired");
+    g.classList.remove("fired", "jitter");
     void g.getBoundingClientRect(); // restart the animation
     g.classList.add("fired");
+    // Two-qubit gates shake as they fire, so it's clear both qubits were caught together.
+    if (g.classList.contains("binary")) g.classList.add("jitter");
   }
 
   /** Floating "−50" at the exit edge of a lane. */
