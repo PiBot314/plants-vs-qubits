@@ -1,8 +1,28 @@
 # Bloch It!
 
+Link: https://youtu.be/BkMaMbHdndg
+
 Bloch It! is a browser-based quantum tower-defence puzzle game built for the Quriosity game jam. Enemy qubits arrive from the right, and you place quantum gates on the grid to steer each one into a harmless |1⟩ state before it reaches the left edge. If a qubit reaches the base in a dangerous state, it deals damage based on the probability of measuring |0⟩.
 
 The game turns quantum mechanics into a playable system: you are not “shooting” enemies, you are shaping amplitudes, phases, interference, and entanglement with the tools of quantum computation.
+
+## Testing / Skip to Any Level
+
+To unlock all levels instantly without playing through the earlier ones, open the browser DevTools console and paste:
+
+```js
+const data = {
+  unlocked:  [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+  completed: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+  starred:   [],
+  discovered: [],
+  seen: []
+};
+localStorage.setItem("blochit.save", JSON.stringify(data));
+location.reload();
+```
+
+All levels will appear on the level-select screen immediately. To reset back to a fresh save, run `localStorage.removeItem("blochit.save")` and reload.
 
 ## What is new in the current version?
 
