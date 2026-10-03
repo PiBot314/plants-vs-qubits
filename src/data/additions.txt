@@ -1,4 +1,12 @@
-1. quantum encyclopedia
-2. toggle for amplitudes/bloch angles
+1. DONE quantum encyclopedia  
+2. EDIT toggle for amplitudes/bloch angles -> Toggle should be hidden behind a settings menu
 3. make play button bigger
-4. make
+4. DONE SWAP Gate 
+5. step by step sim
+6. DONE Controls + Content Based Tutorial - Detailed 
+7. DONE Make dialogue prominent 
+8. Overwrite gate
+9. Jitter on binary gate for visualisation
+10. Save Speed settings
+11. Bloch sphere on hover for any qubit
+12. 

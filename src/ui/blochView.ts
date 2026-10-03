@@ -1,7 +1,7 @@
 import { blochVector, gateRotation, lerp, norm, rotate, rotationBetween, Vec3 } from "../quantum/bloch";
 import { Complex } from "../quantum/complex";
 import { formatAngle, formatKetSum } from "../quantum/format";
-import { binaryTarget, BinaryGateType, GateType, isBinary, unaryMatrix, UnaryGateType } from "../quantum/gates";
+import { applyBinary, BinaryGateType, GateType, isBinary, unaryMatrix, UnaryGateType } from "../quantum/gates";
 import { parseComplex, parseReal } from "../quantum/parse";
 import { StateVector } from "../quantum/state";
 import { Amps, BlochSpec } from "../game/types";
@@ -130,9 +130,9 @@ export function blochDemo(spec: BlochSpec): { el: HTMLElement; stop: () => void 
       : StateVector.fromProduct(from.slice(0, 2).map(parseAmps));
     const before = ket(st);
     const v0 = [blochVector(st, 0), blochVector(st, 1)];
-    st.applyControlled(0, 1, binaryTarget(gate));
+    applyBinary(st, gate, 0, 1);
     const v1 = [blochVector(st, 0), blochVector(st, 1)];
-    const names = gate === "CZ" ? ["qubit 1", "qubit 2"] : ["control ●", gate === "CNOT" ? "target ⊕" : "target Y"];
+    const names = gate === "CZ" || gate === "SWAP" ? ["qubit 1", "qubit 2"] : ["control ●", gate === "CNOT" ? "target ⊕" : "target Y"];
     const sp = names.map((n) => new Sphere(n));
     spheres.append(...sp.map((x) => x.el));
     const at = stateChain(captionTop, [before, ket(st)], [gate]);

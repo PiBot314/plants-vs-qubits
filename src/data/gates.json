@@ -53,5 +53,10 @@
     "name": "Controlled-Y",
     "defaultCost": 2,
     "description": "Placed on a corner. Applies Y to the target (Y box) when the control (●) qubit is |1⟩. Both qubits must cross the corner together. Click a placed CY to swap control and target."
+  },
+  "SWAP": {
+    "name": "SWAP",
+    "defaultCost": 3,
+    "description": "Placed on a corner. Swaps the states of the two qubits crossing it together."
   }
 }

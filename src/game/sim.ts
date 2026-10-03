@@ -1,5 +1,5 @@
 import { StateVector } from "../quantum/state";
-import { binaryTarget, unaryMatrix, BinaryGateType, UnaryGateType } from "../quantum/gates";
+import { applyBinary, unaryMatrix, BinaryGateType, UnaryGateType } from "../quantum/gates";
 import { Level, Placement } from "./types";
 
 export type SimEvent =
@@ -60,9 +60,10 @@ export class Simulation {
         const bottom = crossing.get(`${p.lane + 1}:${p.x}`);
         if (top === undefined || bottom === undefined) continue;
         const [ctrl, tgt] = p.flipped ? [bottom, top] : [top, bottom];
-        this.state.applyControlled(ctrl, tgt, binaryTarget(g.type as BinaryGateType));
+        applyBinary(this.state, g.type as BinaryGateType, ctrl, tgt);
         events.push({ kind: "gate", placementId: p.id, qubits: [top, bottom] });
-      } else {
+      }
+      else {
         const k = crossing.get(`${p.lane}:${p.x}`);
         if (k === undefined) continue;
         this.state.apply1(k, unaryMatrix(g.type as UnaryGateType, g.angle));
