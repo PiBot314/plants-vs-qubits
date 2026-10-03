@@ -1,4 +1,8 @@
-1. quantum encyclopedia
+1. quantum encyclopedia DONE 
 2. toggle for amplitudes/bloch angles
 3. make play button bigger
 4. make
+5. swap gates DONE
+6. step by step sim
+7. Controls + Content Based Tutorial - Detailed DONE
+8. Make dialogue prominent DONE

@@ -2,11 +2,11 @@ import { c, expi, Complex } from "./complex";
 import { Matrix2 } from "./state";
 
 export type UnaryGateType = "I" | "X" | "Y" | "Z" | "H" | "S" | "T" | "P";
-export type BinaryGateType = "CNOT" | "CZ";
+export type BinaryGateType = "CNOT" | "CZ" | "SWAP";
 export type GateType = UnaryGateType | BinaryGateType;
 
 export const UNARY_GATES: UnaryGateType[] = ["I", "X", "Y", "Z", "H", "S", "T", "P"];
-export const BINARY_GATES: BinaryGateType[] = ["CNOT", "CZ"];
+export const BINARY_GATES: BinaryGateType[] = ["CNOT", "CZ", "SWAP"];
 
 export const isBinary = (g: GateType): g is BinaryGateType =>
   (BINARY_GATES as string[]).includes(g);
@@ -34,6 +34,7 @@ export function unaryMatrix(type: UnaryGateType, angle = 0): Matrix2 {
   return type === "P" ? phase(angle) : MATRICES[type];
 }
 
+export type ControlledGateType = Exclude<BinaryGateType, "SWAP">;
 /** Target matrix of a controlled binary gate. */
 export function binaryTarget(type: BinaryGateType): Matrix2 {
   return type === "CNOT" ? MATRICES.X : MATRICES.Z;
