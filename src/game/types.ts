@@ -30,12 +30,34 @@ export interface LevelData {
   enemies: EnemyData[];
 }
 
+export type Amps = [string, string];
+
+/**
+ * A Bloch sphere illustration attached to a dialogue page or encyclopedia entry.
+ * - `gate` (+ optional `from`): animates that gate acting on the input qubit(s).
+ * - `tour`: glides between the listed states.
+ */
+export interface BlochSpec {
+  gate?: GateType;
+  /** P gate angle, e.g. "pi/8". */
+  angle?: string;
+  /** Input state(s): one [α, β] per qubit. Defaults to |0⟩ (and |+⟩|0⟩ for two-qubit gates). */
+  from?: Amps | Amps[];
+  tour?: Amps[];
+  caption?: string;
+}
+
 export interface ContentEntry {
   level: number;
   /** "start", "end", or an in-game trigger: "place:<GATE>", "apply:<GATE>", "damage", "entangle". */
   when: string;
   text: string;
+  /** Optional Bloch sphere illustration shown with this page. */
+  bloch?: BlochSpec;
 }
+
+/** One page of dialogue. */
+export type DialoguePage = Pick<ContentEntry, "text" | "bloch">;
 
 export interface GateInfo {
   name: string;
@@ -94,6 +116,7 @@ export interface EncyclopediaEntry {
   level: number | null;
   text: string;
   wiki: string;
+  bloch?: BlochSpec;
 }
 
 export interface SaveData {

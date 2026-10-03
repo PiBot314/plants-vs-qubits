@@ -1,5 +1,6 @@
 import { ENTRIES } from "../game/encyclopedia";
 import { loadProgress, markSeen } from "../game/progress";
+import { blochDemo } from "./blochView";
 import { h } from "./dom";
 import { pushModal } from "./modal";
 
@@ -50,7 +51,11 @@ export function openEncyclopedia(parent: HTMLElement, opts: EncyclopediaOptions 
     ),
   );
 
+  let stopDemo = () => {};
+
   function select(id: string | undefined) {
+    stopDemo();
+    stopDemo = () => {};
     current = id;
     items.forEach((el, i) => el.classList.toggle("on", ENTRIES[i].id === id));
     const i = ENTRIES.findIndex((e) => e.id === id);
@@ -66,9 +71,17 @@ export function openEncyclopedia(parent: HTMLElement, opts: EncyclopediaOptions 
       h("h3", {}, e.term),
       h("span", { class: "ency-cat" }, e.category),
       h("p", {}, e.text),
+      ...(e.bloch ? [demo(e.bloch)] : []),
       h("a", { class: "ency-wiki", href: e.wiki, target: "_blank", rel: "noopener noreferrer" }, "Read more on Wikipedia ↗"),
     );
     items[i].scrollIntoView({ block: "nearest" });
+  }
+
+  function demo(spec: NonNullable<(typeof ENTRIES)[number]["bloch"]>) {
+    const d = blochDemo(spec);
+    stopDemo = d.stop;
+    d.el.classList.add("ency-demo");
+    return d.el;
   }
 
   function step(d: number) {
@@ -90,6 +103,7 @@ export function openEncyclopedia(parent: HTMLElement, opts: EncyclopediaOptions 
   function close() {
     if (closed) return;
     closed = true;
+    stopDemo();
     popModal();
     root.remove();
     opts.onClose?.();

@@ -4,7 +4,7 @@ import { EntanglementTracker, QUBIT_PURPLE } from "../game/entangle";
 import { GATE_INFO, getContent, getLevel, nextLevel } from "../game/level";
 import { loadProgress, recordWin } from "../game/progress";
 import { earnsStar, Outcome, SimEvent, Simulation, START_HP } from "../game/sim";
-import { Level } from "../game/types";
+import { DialoguePage, Level } from "../game/types";
 import { formatComplex, formatKetSum, formatReal } from "../quantum/format";
 import { BoardView, QubitRender } from "./boardView";
 import { Dialogue, openDialogue } from "./dialogue";
@@ -29,8 +29,10 @@ interface TickAnim {
   half: boolean;
 }
 
-const DEFAULT_TEXT = [
-  "Pick a gate from the top bar and click a grid line to place it. Right-click a gate to remove it. Press ▶ to send the qubits in.",
+const DEFAULT_TEXT: DialoguePage[] = [
+  {
+    text: "Pick a gate from the top bar and click a grid line to place it. Right-click a gate to remove it. Press ▶ to send the qubits in.",
+  },
 ];
 
 export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate): Cleanup {
@@ -55,7 +57,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   let hp = START_HP;
 
   // Every dialogue page seen this visit; the bottom text box pages through these.
-  const log: string[] = [];
+  const log: DialoguePage[] = [];
   let msgIdx = 0;
   let dialogue: Dialogue | null = null;
   const fired = new Set<string>();
@@ -179,7 +181,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       return;
     }
     msgEl.className = "msg";
-    msgEl.replaceChildren(richText(log[msgIdx], screen, refreshEncyBadge));
+    msgEl.replaceChildren(richText(log[msgIdx].text, screen, refreshEncyBadge));
     pager.style.visibility = "visible";
     pageEl.textContent = `${msgIdx + 1}/${log.length}`;
     prevBtn.disabled = msgIdx === 0;
@@ -203,7 +205,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
 
   /* ---------- dialogue ---------- */
   /** Adds pages to the log and, if `popup`, shows them in the centre of the screen. */
-  function say(pages: string[], popup = true) {
+  function say(pages: DialoguePage[], popup = true) {
     if (!pages.length) return;
     const first = log.length;
     log.push(...pages);
@@ -237,7 +239,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
    * "entangle" when qubits first become entangled.
    */
   function trigger(...whens: string[]) {
-    const pages: string[] = [];
+    const pages: DialoguePage[] = [];
     for (const w of whens) {
       if (fired.has(w)) continue;
       fired.add(w);
@@ -451,7 +453,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
           won && !star ? h("div", {}, `An optimal solution costs ${level.optimalCost}. Find it for a ★`) : null,
           !won ? h("div", {}, "Every qubit hitting the left edge costs P(0) × 100 HP.") : null,
         ),
-        ...endText.map((t) => h("p", { class: "story" }, richText(t, screen, refreshEncyBadge))),
+        ...endText.map((t) => h("p", { class: "story" }, richText(t.text, screen, refreshEncyBadge))),
         h("div", { class: "buttons" }, ...buttons),
       ),
     );

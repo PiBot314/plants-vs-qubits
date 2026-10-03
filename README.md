@@ -80,6 +80,20 @@ Each trigger fires once per visit to a level. Every page shown also goes into th
 text box at the bottom, where the player can page back through it or reopen the
 centred dialogue with ⤢.
 
+A page (or encyclopedia entry) can carry an animated Bloch sphere with an optional
+`bloch` field:
+
+```jsonc
+"bloch": { "gate": "X", "from": [["1", "0"]] }               // animate a gate on |0⟩
+"bloch": { "gate": "P", "angle": "pi/8", "from": [["1/sqrt2", "1/sqrt2"]] }
+"bloch": { "gate": "CNOT", "from": [["1/sqrt2", "1/sqrt2"], ["1", "0"]] }  // control, target
+"bloch": { "tour": [["1", "0"], ["1/sqrt2", "1/sqrt2"], ["0", "1"]] }       // glide between states
+```
+
+One-qubit gates are drawn as a rotation about their axis, shown as a gold dashed line.
+Two-qubit gates show one sphere per qubit, and the arrows shrink when the qubits become
+entangled. A caption is generated automatically; set `"caption"` to override it.
+
 Text can link to encyclopedia entries with `[[id]]` or `[[id|label]]`, e.g.
 `"Grab the [[x|X flipper]]!"`. Links show up once the entry has been discovered;
 before that they render as plain text.

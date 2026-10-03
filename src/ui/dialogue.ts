@@ -1,3 +1,5 @@
+import { DialoguePage } from "../game/types";
+import { blochDemo } from "./blochView";
 import { h } from "./dom";
 import { pushModal } from "./modal";
 
@@ -15,7 +17,7 @@ export interface Dialogue {
 }
 
 /** Centred, paged dialogue. Arrow keys / Enter page through it, Esc skips. */
-export function openDialogue(parent: HTMLElement, pages: string[], opts: DialogueOptions = {}): Dialogue {
+export function openDialogue(parent: HTMLElement, pages: DialoguePage[], opts: DialogueOptions = {}): Dialogue {
   let idx = Math.max(0, Math.min(pages.length - 1, opts.start ?? 0));
   const last = pages.length - 1;
 
@@ -37,8 +39,17 @@ export function openDialogue(parent: HTMLElement, pages: string[], opts: Dialogu
     ),
   );
 
+  let stopDemo = () => {};
+
   function render() {
-    body.replaceChildren(h("p", { class: "dlg-text" }, opts.render ? opts.render(pages[idx]) : pages[idx]));
+    stopDemo();
+    const page = pages[idx];
+    body.replaceChildren(h("p", { class: "dlg-text" }, opts.render ? opts.render(page.text) : page.text));
+    if (page.bloch) {
+      const demo = blochDemo(page.bloch);
+      body.append(demo.el);
+      stopDemo = demo.stop;
+    } else stopDemo = () => {};
     dots.replaceChildren(
       ...pages.map((_, i) => h("span", { class: `dlg-dot${i === idx ? " on" : i < idx ? " seen" : ""}` })),
     );
@@ -66,6 +77,7 @@ export function openDialogue(parent: HTMLElement, pages: string[], opts: Dialogu
   function close() {
     if (closed) return;
     closed = true;
+    stopDemo();
     popModal();
     root.remove();
     opts.onClose?.(idx);

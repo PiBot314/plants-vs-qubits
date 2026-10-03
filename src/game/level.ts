@@ -5,7 +5,7 @@ import { c, Complex } from "../quantum/complex";
 import { formatAngle } from "../quantum/format";
 import { isBinary, GateType } from "../quantum/gates";
 import { parseComplex, parseReal } from "../quantum/parse";
-import { ContentEntry, GateInfo, Level, LevelData } from "./types";
+import { ContentEntry, DialoguePage, GateInfo, Level, LevelData } from "./types";
 
 export const GATE_INFO = gatesJson as unknown as Record<GateType, GateInfo>;
 
@@ -61,8 +61,8 @@ export const LEVELS: Level[] = (levelsJson as unknown as LevelData[]).map(resolv
 
 const CONTENT = contentJson as unknown as ContentEntry[];
 
-export function getContent(level: number, when: string): string[] {
-  return CONTENT.filter((e) => e.level === level && e.when === when).map((e) => e.text);
+export function getContent(level: number, when: string): DialoguePage[] {
+  return CONTENT.filter((e) => e.level === level && e.when === when).map(({ text, bloch }) => ({ text, bloch }));
 }
 
 export function getLevel(id: number): Level | undefined {

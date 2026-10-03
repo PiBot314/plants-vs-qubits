@@ -304,3 +304,24 @@ button.icon { width: 2.6em; height: 2.6em; padding: 0; display: grid; place-item
 @keyframes toast { 0% { opacity: 0; } 8%, 85% { opacity: 1; } 100% { opacity: 0; } }
 .menu-row { display: flex; gap: 0.7rem; }
 .menu-row button { flex: 1; }
+
+/* ---------- Bloch sphere demos ---------- */
+.bloch-demo { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+.bv-spheres { display: flex; gap: 1.5rem; }
+.bv-sphere { width: 170px; height: 170px; overflow: visible; }
+.bv-ball { fill: rgba(111, 227, 255, 0.04); stroke: var(--line-strong); }
+.bv-ring { fill: none; stroke: rgba(150, 165, 255, 0.3); }
+.bv-ring.back { stroke-dasharray: 2 3; stroke: rgba(150, 165, 255, 0.15); }
+.bv-ax { stroke: rgba(150, 165, 255, 0.18); }
+.bv-label { fill: var(--dim); font-family: var(--mono); font-size: 9px; text-anchor: middle; dominant-baseline: central; }
+.bv-name { fill: var(--dim); font-family: var(--mono); font-size: 9px; text-anchor: middle; }
+.bv-axis { stroke: var(--gold); stroke-width: 1.2; stroke-dasharray: 4 3; opacity: 0.8; }
+.bv-trail { fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: 0.55; }
+.bv-arrow { stroke: var(--purple); stroke-width: 2.6; stroke-linecap: round; }
+.bv-tip { fill: var(--purple); filter: drop-shadow(0 0 5px var(--purple)); }
+.bv-states { font-family: var(--mono); font-size: 0.85rem; color: var(--dim); text-align: center; }
+.bv-ket { transition: color 0.2s; }
+.bv-ket.on { color: #fff; }
+.bv-gate { color: var(--accent); white-space: pre; }
+.bv-caption { font-size: 0.82rem; color: var(--dim); text-align: center; max-width: 30rem; }
+.ency-demo { align-self: center; margin: 0.4rem 0; }
