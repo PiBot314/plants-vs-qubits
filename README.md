@@ -67,7 +67,12 @@ Enemies can also arrive **entangled**. Give `lanes` instead of `lane`, and list
 ```
 
 This is the Bell pair (|00⟩ + |11⟩)/√2, with one qubit in lane 0 and one in lane 1.
-Members of an entangled group always share a `time`.
+Members of an entangled group always share a `time`. Groups can span any lanes (they
+don't have to be neighbours) and any size: three lanes take 8 amplitudes, as in the
+GHZ triad of level 16.
+
+Gate names: `"CX"` is accepted as another name for `"CNOT"`. The chip shows whichever
+name the level uses, and `place:`/`apply:` triggers fire under both.
 
 ### Checking a level
 
@@ -78,6 +83,11 @@ checks that:
 - it wins with full HP at exactly `optimalCost`,
 - an exhaustive solver (`tests/solver.ts`) finds nothing cheaper that survives,
 - the level uses default gate costs.
+
+Levels 14–16 are too big for the exhaustive solver, so they skip the "nothing cheaper
+survives" check. Their `optimalCost` is the cheapest *perfect* solution, found by
+`solvePerfect(level)`, a column-aware A* search. A cheaper solution that loses some HP
+hasn't been ruled out.
 
 To check a new level, add its answer key there. The solver can also tell you a level's
 true cheapest win (`solve(level).minWin`) and give one cheapest perfect solution
@@ -116,7 +126,8 @@ A page (or encyclopedia entry) can carry an animated Bloch sphere with an option
 
 One-qubit gates are drawn as a rotation about their axis, shown as a gold dashed line.
 Two-qubit gates show one sphere per qubit, and the arrows shrink when the qubits become
-entangled. A caption is generated automatically; set `"caption"` to override it.
+entangled. `"joint"` can hold a 2-, 3-… qubit entangled starting state, and
+`"on": [control, target]` picks which qubits the gate acts on. A caption is generated automatically; set `"caption"` to override it.
 
 Text can link to encyclopedia entries with `[[id]]` or `[[id|label]]`, e.g.
 `"Grab the [[x|X flipper]]!"`. Links show up once the entry has been discovered;

@@ -325,3 +325,6 @@ button.icon { width: 2.6em; height: 2.6em; padding: 0; display: grid; place-item
 .bv-gate { color: var(--accent); white-space: pre; }
 .bv-caption { font-size: 0.82rem; color: var(--dim); text-align: center; max-width: 30rem; }
 .ency-demo { align-self: center; margin: 0.4rem 0; }
+/* Three or more spheres (e.g. a GHZ triad) must still fit the dialogue card. */
+.bv-spheres:has(> :nth-child(3)) { gap: 0.6rem; }
+.bv-spheres:has(> :nth-child(3)) .bv-sphere { width: 140px; height: 140px; }
