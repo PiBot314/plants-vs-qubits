@@ -135,11 +135,11 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     onSlot: (lane, x) => {
       if (selected === null || mode !== "edit") return;
       const r = board.place(selected, lane, x);
-      const type = level.gates[selected].type;
+      const placedOption = selected;
       if (typeof r === "string") warn(r);
       else if (level.gates[selected].cost > board.coins) selected = null;
       renderBoard();
-      if (typeof r !== "string") trigger(`place:${type}`);
+      if (typeof r !== "string") trigger(...triggerNames("place", placedOption));
     },
     onGateClick: (id) => {
       if (mode !== "edit") return;
@@ -264,6 +264,12 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
    * "entangle" when qubits first become entangled, "disentangle" when an entangled
    * qubit first becomes independent again.
    */
+  /** "apply:CNOT", plus "apply:CX" when the level calls the gate by an alias. */
+  function triggerNames(kind: string, option: number): string[] {
+    const g = level.gates[option];
+    return g.label !== g.type && g.type !== "P" ? [`${kind}:${g.type}`, `${kind}:${g.label}`] : [`${kind}:${g.type}`];
+  }
+
   function trigger(...whens: string[]) {
     const pages: DialoguePage[] = [];
     for (const w of whens) {
@@ -433,7 +439,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     for (const e of a.events) {
       if (e.kind === "gate") {
         const p = sim.placements.find((q) => q.id === e.placementId);
-        if (p) whens.push(`apply:${level.gates[p.option].type}`);
+        if (p) whens.push(...triggerNames("apply", p.option));
       } else if (e.damage > 1e-9) whens.push("damage");
     }
     trigger(...whens, ...a.whens);

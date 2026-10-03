@@ -11,18 +11,22 @@ export const GATE_INFO = gatesJson as unknown as Record<GateType, GateInfo>;
 
 const MAX_QUBITS = 14;
 
+/** Alternative names accepted in level data. The chip shows the name as written. */
+export const GATE_ALIASES: Record<string, GateType> = { CX: "CNOT" };
+
 export function resolveLevel(data: LevelData): Level {
   const where = `Level ${data.id}`;
   if (data.lanes < 1 || data.columns < 1) throw new Error(`${where}: needs at least one lane and column`);
 
   const gates = data.gates.map((g, index) => {
-    const info = GATE_INFO[g.type];
+    const type = GATE_ALIASES[g.type] ?? (g.type as GateType);
+    const info = GATE_INFO[type];
     if (!info) throw new Error(`${where}: unknown gate "${g.type}"`);
-    const binary = isBinary(g.type);
+    const binary = isBinary(type);
     if (binary && data.lanes < 2) throw new Error(`${where}: ${g.type} needs at least 2 lanes`);
-    const angle = g.type === "P" ? parseReal(g.angle ?? "pi/2") : 0;
-    const label = g.type === "P" ? `P(${formatAngle(angle) ?? angle.toFixed(2)})` : g.type;
-    return { index, type: g.type, cost: g.cost ?? info.defaultCost, angle, label, binary };
+    const angle = type === "P" ? parseReal(g.angle ?? "pi/2") : 0;
+    const label = type === "P" ? `P(${formatAngle(angle) ?? angle.toFixed(2)})` : g.type;
+    return { index, type, cost: g.cost ?? info.defaultCost, angle, label, binary };
   });
 
   const seen = new Set<string>();

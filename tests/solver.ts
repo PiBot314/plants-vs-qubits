@@ -187,3 +187,239 @@ export function solve(level: Level, maxCost = level.budget): SolveResult {
     ...(witness.length ? { witness: witness.slice(0, -1) } : {}),
   };
 }
+
+/* ======================================================================
+ * A* search for the cheapest perfect (zero-damage) solution, for levels too
+ * big for the exhaustive search above (many lanes, T gates, 3-qubit groups).
+ *
+ * Heuristic: cost partitioning over waves. An op that affects k waves is
+ * charged cost/k to each, and d_w(s) is wave w's exact cheapest partitioned
+ * cost from state s to |1…1⟩ when solved on its own. The sum over waves is an
+ * admissible, consistent lower bound on the remaining cost. d_w is looked up
+ * in a table built by searching backwards from |1…1⟩. The table only needs to
+ * reach B_w = maxCost − Σ_{v≠w} d_v(start), because a state further out than
+ * that can't lie on any solution within maxCost.
+ * ====================================================================== */
+
+interface WaveOp {
+  label: string;
+  cost: number;
+  /** Lanes the gate occupies (one column in each). */
+  lanes: number[];
+  /** wave index -> forward / inverse application on that wave's state */
+  forward: Map<number, (st: StateVector) => StateVector>;
+  inverse: Map<number, (st: StateVector) => StateVector>;
+}
+
+const adjoint = (m: ReturnType<typeof unaryMatrix>): ReturnType<typeof unaryMatrix> => [
+  [{ re: m[0][0].re, im: -m[0][0].im }, { re: m[1][0].re, im: -m[1][0].im }],
+  [{ re: m[0][1].re, im: -m[0][1].im }, { re: m[1][1].re, im: -m[1][1].im }],
+];
+
+function waveOpsOf(level: Level, waves: Wave[]): WaveOp[] {
+  const lanes = Array.from({ length: level.lanes }, (_, i) => i);
+  const ops: WaveOp[] = [];
+  const seen = new Set<string>();
+  const clone = (st: StateVector, f: (s: StateVector) => void) => {
+    const next = st.clone();
+    f(next);
+    return next;
+  };
+  for (const g of level.gates) {
+    if (g.type === "I") continue;
+    const id = `${g.type}:${g.angle}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    if (!g.binary) {
+      const m = unaryMatrix(g.type as UnaryGateType, g.angle);
+      const mi = adjoint(m);
+      for (const lane of lanes) {
+        const op: WaveOp = { label: `${g.label}@lane${lane}`, cost: g.cost, lanes: [lane], forward: new Map(), inverse: new Map() };
+        waves.forEach((w, i) => {
+          const k = w.local.get(lane);
+          if (k === undefined) return;
+          op.forward.set(i, (st) => clone(st, (s) => s.apply1(k, m)));
+          op.inverse.set(i, (st) => clone(st, (s) => s.apply1(k, mi)));
+        });
+        if (op.forward.size) ops.push(op);
+      }
+    } else {
+      for (const top of lanes.slice(0, -1)) {
+        for (const flipped of isDirected(g.type) ? [false, true] : [false]) {
+          const label = `${g.label}@lanes${top}-${top + 1}${flipped ? "(flipped)" : ""}`;
+          const op: WaveOp = { label, cost: g.cost, lanes: [top, top + 1], forward: new Map(), inverse: new Map() };
+          waves.forEach((w, i) => {
+            const a = w.local.get(top);
+            const b = w.local.get(top + 1);
+            if (a === undefined || b === undefined) return;
+            // Every two-qubit gate we support is its own inverse.
+            const f = (st: StateVector) => clone(st, (s) => applyBinary(s, g.type as BinaryGateType, flipped ? b : a, flipped ? a : b));
+            op.forward.set(i, f);
+            op.inverse.set(i, f);
+          });
+          if (op.forward.size) ops.push(op);
+        }
+      }
+    }
+  }
+  return ops;
+}
+
+/** Tiny binary min-heap keyed by priority. */
+class Heap<T> {
+  private items: { p: number; v: T }[] = [];
+  get size() {
+    return this.items.length;
+  }
+  push(p: number, v: T) {
+    const a = this.items;
+    a.push({ p, v });
+    let i = a.length - 1;
+    while (i > 0) {
+      const j = (i - 1) >> 1;
+      if (a[j].p <= a[i].p) break;
+      [a[i], a[j]] = [a[j], a[i]];
+      i = j;
+    }
+  }
+  pop(): { p: number; v: T } {
+    const a = this.items;
+    const top = a[0];
+    const last = a.pop()!;
+    if (a.length) {
+      a[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1;
+        const r = l + 1;
+        let m = i;
+        if (l < a.length && a[l].p < a[m].p) m = l;
+        if (r < a.length && a[r].p < a[m].p) m = r;
+        if (m === i) break;
+        [a[i], a[m]] = [a[m], a[i]];
+        i = m;
+      }
+    }
+    return top;
+  }
+}
+
+const COST_EPS = 1e-9;
+
+/** Dijkstra over one wave's states with partitioned costs, up to `bound` (or until `target` is settled). */
+function waveDijkstra(
+  start: StateVector,
+  steps: { pc: number; apply: (st: StateVector) => StateVector }[],
+  bound: number,
+  maxStates = Infinity,
+): { dist: Map<string, number>; radius: number } {
+  const dist = new Map<string, number>([[stateKey(start), 0]]);
+  const settled = new Map<string, number>();
+  const heap = new Heap<StateVector>();
+  heap.push(0, start);
+  let radius = 0;
+  while (heap.size) {
+    const { p, v } = heap.pop();
+    const vk = stateKey(v);
+    if (settled.has(vk) || p > (dist.get(vk) ?? Infinity) + COST_EPS) continue;
+    // Stop once the table is full; everything settled so far is exact.
+    if (settled.size >= maxStates) {
+      radius = p;
+      return { dist: settled, radius };
+    }
+    settled.set(vk, p);
+    radius = p;
+    for (const s of steps) {
+      const c = p + s.pc;
+      if (c > bound + COST_EPS) continue;
+      const next = s.apply(v);
+      const key = stateKey(next);
+      if (c + COST_EPS < (dist.get(key) ?? Infinity)) {
+        dist.set(key, c);
+        heap.push(c, next);
+      }
+    }
+  }
+  // Exhausted: every state within `bound` is settled.
+  return { dist: settled, radius: bound + COST_EPS };
+}
+
+const allOnes = (n: number) => {
+  const st = new StateVector(n);
+  st.re[0] = 0;
+  st.re[(1 << n) - 1] = 1;
+  return st;
+};
+
+export interface PerfectResult {
+  /** Cheapest zero-damage cost, or null if there is none within maxCost. */
+  minPerfect: number | null;
+  /** One cheapest solution, in the order the qubits meet the gates. */
+  witness: string[];
+  /** Joint states expanded (for the curious). */
+  expanded: number;
+}
+
+/**
+ * Also respects the grid width: gates on different lanes commute, so the
+ * columns a solution needs is the depth of its earliest-possible layout. Each
+ * lane tracks how many columns it has used; a two-qubit gate first waits for
+ * both of its lanes. Anything deeper than `level.columns` is pruned.
+ */
+export function solvePerfect(level: Level, maxCost = level.budget, maxTableStates = 200_000): PerfectResult {
+  const waves = wavesOf(level);
+  const ops = waveOpsOf(level, waves);
+  const pc = (op: WaveOp) => op.cost / op.forward.size;
+
+  // Backward tables: exact d_w(s) for states near |1…1⟩. A state missing from a table
+  // is at least `radius` away (Dijkstra settles states in distance order), so the
+  // heuristic stays admissible even when a table is capped.
+  const tables = waves.map((w, i) => {
+    const steps = ops.filter((o) => o.inverse.has(i)).map((o) => ({ pc: pc(o), apply: o.inverse.get(i)! }));
+    return waveDijkstra(allOnes(w.init.n), steps, maxCost, maxTableStates);
+  });
+  solvePerfect.lastTableSizes = tables.map((t) => t.dist.size);
+  const h = (states: StateVector[]) => {
+    let sum = 0;
+    for (let i = 0; i < states.length; i++) sum += tables[i].dist.get(stateKey(states[i])) ?? tables[i].radius;
+    return sum;
+  };
+  const isGoal = (states: StateVector[]) => states.every((st, i) => tables[i].dist.get(stateKey(st)) === 0);
+
+  interface Node {
+    states: StateVector[];
+    depth: number[];
+    g: number;
+    path: string[];
+  }
+  const heap = new Heap<Node>();
+  const bestG = new Map<string, number>();
+  const start = waves.map((w) => w.init);
+  heap.push(h(start), { states: start, depth: new Array(level.lanes).fill(0), g: 0, path: [] });
+  let expanded = 0;
+  while (heap.size) {
+    const { v: node } = heap.pop();
+    const key = node.states.map(stateKey).join("|") + "#" + node.depth.join(",");
+    if ((bestG.get(key) ?? Infinity) < node.g) continue;
+    expanded++;
+    if (isGoal(node.states)) return { minPerfect: node.g, witness: node.path, expanded };
+    for (const op of ops) {
+      const g = node.g + op.cost;
+      if (g > maxCost) continue;
+      const col = Math.max(...op.lanes.map((l) => node.depth[l])) + 1;
+      if (col > level.columns) continue;
+      const depth = [...node.depth];
+      for (const l of op.lanes) depth[l] = col;
+      const states = node.states.map((st, i) => op.forward.get(i)?.(st) ?? st);
+      const f = g + h(states);
+      if (f > maxCost + COST_EPS) continue;
+      const k = states.map(stateKey).join("|") + "#" + depth.join(",");
+      if ((bestG.get(k) ?? Infinity) <= g) continue;
+      bestG.set(k, g);
+      heap.push(f, { states, depth, g, path: [...node.path, `${op.label}@x${level.columns + 1 - col}`] });
+    }
+  }
+  return { minPerfect: null, witness: [], expanded };
+}
+
+solvePerfect.lastTableSizes = [] as number[];
