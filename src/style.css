@@ -192,6 +192,18 @@ button.icon { width: 2.6em; height: 2.6em; padding: 0; display: grid; place-item
 .board .gate:hover .box, .board .gate:hover .target { stroke: #fff; }
 .board .gate.fired { animation: fire 0.45s ease-out; }
 @keyframes fire { 0% { filter: drop-shadow(0 0 0 var(--accent)); } 30% { filter: drop-shadow(0 0 10px var(--accent)); } 100% { filter: drop-shadow(0 0 0 transparent); } }
+.board .gate.binary { transform-box: fill-box; transform-origin: center; }
+.board .gate.jitter { animation: fire 0.45s ease-out, jitter 0.5s linear; }
+@keyframes jitter {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-3px, 1px) rotate(-2deg); }
+  20% { transform: translate(3px, -1px) rotate(2deg); }
+  30% { transform: translate(-3px, -1px) rotate(-1.5deg); }
+  40% { transform: translate(2px, 1px) rotate(1.5deg); }
+  55% { transform: translate(-2px, 0) rotate(-1deg); }
+  70% { transform: translate(1px, 0) rotate(0.5deg); }
+  85% { transform: translate(-1px, 0); }
+}
 .board.locked .gate { cursor: default; }
 .board .qubit circle { stroke-width: 2; }
 .board .qubit text { fill: #f1eaff; font-family: var(--mono); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
