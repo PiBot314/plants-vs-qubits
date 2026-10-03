@@ -1,3 +1,4 @@
+import { isDirected } from "../quantum/gates";
 import { Level, Placement } from "./types";
 
 type Action =
@@ -65,7 +66,7 @@ export class Board {
 
   flip(id: number): void {
     const p = this.placements.find((q) => q.id === id);
-    if (!p || this.level.gates[p.option].type !== "CNOT") return;
+    if (!p || !isDirected(this.level.gates[p.option].type)) return;
     p.flipped = !p.flipped;
     this.history.push({ kind: "flip", id });
   }

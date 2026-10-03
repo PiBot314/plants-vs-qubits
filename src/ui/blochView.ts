@@ -120,54 +120,74 @@ export function blochDemo(spec: BlochSpec): { el: HTMLElement; stop: () => void 
   const el = h("div", { class: "bloch-demo" }, spheres, captionTop, captionBottom);
   let timeline: Timeline;
 
-  if (spec.gate && isBinary(spec.gate)) {
+  const gates = spec.gates ?? (spec.gate ? [spec.gate] : []);
+
+  if (gates.length === 1 && isBinary(gates[0])) {
+    const gate = gates[0] as BinaryGateType;
     const from = (spec.from && Array.isArray(spec.from[0]) ? spec.from : [["1/sqrt2", "1/sqrt2"], ["1", "0"]]) as Amps[];
-    const st = StateVector.fromProduct(from.slice(0, 2).map(parseAmps));
+    const st = spec.joint
+      ? StateVector.fromGroups(2, [{ qubits: [0, 1], amps: spec.joint.map((a) => parseComplex(a)) }])
+      : StateVector.fromProduct(from.slice(0, 2).map(parseAmps));
     const before = ket(st);
     const v0 = [blochVector(st, 0), blochVector(st, 1)];
-    st.applyControlled(0, 1, binaryTarget(spec.gate as BinaryGateType));
+    st.applyControlled(0, 1, binaryTarget(gate));
     const v1 = [blochVector(st, 0), blochVector(st, 1)];
-    const names = spec.gate === "CNOT" ? ["control ●", "target ⊕"] : ["qubit 1", "qubit 2"];
+    const names = gate === "CZ" ? ["qubit 1", "qubit 2"] : ["control ●", gate === "CNOT" ? "target ⊕" : "target Y"];
     const sp = names.map((n) => new Sphere(n));
     spheres.append(...sp.map((x) => x.el));
-    const ab = statePair(captionTop, before, ket(st), spec.gate);
-    const shrinks = v1.some((v) => norm(v) < 0.99);
+    const at = stateChain(captionTop, [before, ket(st)], [gate]);
+    const entangledBefore = v0.some((v) => norm(v) < 0.99);
+    const entangledAfter = v1.some((v) => norm(v) < 0.99);
     captionBottom.textContent =
       spec.caption ??
-      (shrinks
+      (entangledAfter && !entangledBefore
         ? "The arrows shrink into the sphere: the qubits are now entangled and no longer have a direction of their own."
-        : `${spec.gate} acts on both qubits together.`);
+        : entangledBefore && !entangledAfter
+          ? "The arrows grow back out of the centre: the qubits are independent again, each with its own state."
+          : `${gate} acts on both qubits together.`);
     timeline = {
       period: HOLD0 + MOVE + HOLD1,
       frame(t) {
         const p = ease(Math.min(1, Math.max(0, (t - HOLD0) / MOVE)));
         sp.forEach((x, i) => x.set(lerp(v0[i], v1[i], p), [v0[i], lerp(v0[i], v1[i], p)]));
-        ab(t < HOLD0 ? 0 : t > HOLD0 + MOVE ? 1 : -1);
+        at(t < HOLD0 ? 0 : t > HOLD0 + MOVE ? 1 : -1);
       },
     };
-  } else if (spec.gate) {
-    const type = spec.gate as UnaryGateType;
+  } else if (gates.length) {
+    // One or more single-qubit gates, animated one rotation at a time.
     const angle = spec.angle ? parseReal(spec.angle) : Math.PI / 2;
     const fromAmps = (spec.from ? (Array.isArray(spec.from[0]) ? spec.from[0] : spec.from) : ["1", "0"]) as Amps;
     const st = StateVector.fromProduct([parseAmps(fromAmps)]);
-    const before = ket(st);
-    const v0 = blochVector(st, 0);
-    st.apply1(0, unaryMatrix(type, angle));
-    const rot = gateRotation(type, angle);
+    const labels = [ket(st)];
+    const vs = [blochVector(st, 0)];
+    const rots = gates.map((g) => {
+      st.apply1(0, unaryMatrix(g as UnaryGateType, angle));
+      labels.push(ket(st));
+      vs.push(blochVector(st, 0));
+      return gateRotation(g, angle);
+    });
+    const names = gates.map((g) => (g === "P" ? `P(${formatAngle(angle)})` : g));
     const sphere = new Sphere();
-    sphere.showAxis(rot.axis);
     spheres.append(sphere.el);
-    const label = type === "P" ? `P(${formatAngle(angle)})` : type;
-    const ab = statePair(captionTop, before, ket(st), label);
-    captionBottom.textContent = spec.caption ?? `${label}: ${describeRotation(type, angle)}.`;
+    const at = stateChain(captionTop, labels, names);
+    captionBottom.textContent =
+      spec.caption ?? (gates.length === 1 ? `${names[0]}: ${describeRotation(gates[0], angle)}.` : `${names.join(", then ")}.`);
+    const GAP = 0.5;
+    const segStart = (k: number) => HOLD0 + k * (MOVE + GAP);
     timeline = {
-      period: HOLD0 + MOVE + HOLD1,
+      period: segStart(gates.length) - GAP + HOLD1,
       frame(t) {
-        const p = ease(Math.min(1, Math.max(0, (t - HOLD0) / MOVE)));
+        // Which rotation is running (or last finished), and how far through it.
+        let k = 0;
+        while (k < gates.length - 1 && t >= segStart(k + 1)) k++;
+        const p = ease(Math.min(1, Math.max(0, (t - segStart(k)) / MOVE)));
+        const rot = rots[k];
+        sphere.showAxis(rot.axis);
         const trail: Vec3[] = [];
-        for (let i = 0; i <= 40; i++) trail.push(rotate(v0, rot.axis, rot.angle * p * (i / 40)));
-        sphere.set(rotate(v0, rot.axis, rot.angle * p), trail);
-        ab(t < HOLD0 ? 0 : t > HOLD0 + MOVE ? 1 : -1);
+        for (let j = 0; j < k; j++) for (let i = 0; i <= 20; i++) trail.push(rotate(vs[j], rots[j].axis, (rots[j].angle * i) / 20));
+        for (let i = 0; i <= 30; i++) trail.push(rotate(vs[k], rot.axis, rot.angle * p * (i / 30)));
+        sphere.set(rotate(vs[k], rot.axis, rot.angle * p), trail);
+        at(t < HOLD0 ? 0 : p >= 1 ? k + 1 : p <= 0 ? k : -1);
       },
     };
   } else {
@@ -208,13 +228,12 @@ export function blochDemo(spec: BlochSpec): { el: HTMLElement; stop: () => void 
   return { el, stop: () => cancelAnimationFrame(raf) };
 }
 
-/** "before ─X→ after" with the current end highlighted; returns a setter (0 = before, 1 = after, -1 = moving). */
-function statePair(parent: HTMLElement, before: string, after: string, gate: string): (which: number) => void {
-  const a = h("span", { class: "bv-ket" }, before);
-  const b = h("span", { class: "bv-ket" }, after);
-  parent.append(a, h("span", { class: "bv-gate" }, ` ─${gate}→ `), b);
-  return (which) => {
-    a.classList.toggle("on", which === 0);
-    b.classList.toggle("on", which === 1);
-  };
+/** "s0 ─X→ s1 ─Y→ s2" with the current state highlighted; the setter takes its index (-1 = moving). */
+function stateChain(parent: HTMLElement, states: string[], gates: string[]): (which: number) => void {
+  const els = states.map((st) => h("span", { class: "bv-ket" }, st));
+  els.forEach((el, i) => {
+    if (i) parent.append(h("span", { class: "bv-gate" }, ` ─${gates[i - 1]}→ `));
+    parent.append(el);
+  });
+  return (which) => els.forEach((el, i) => el.classList.toggle("on", i === which));
 }

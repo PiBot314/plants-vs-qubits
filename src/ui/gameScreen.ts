@@ -1,6 +1,6 @@
 import type { Navigate } from "../main";
 import { Board } from "../game/board";
-import { EntanglementTracker, QUBIT_PURPLE } from "../game/entangle";
+import { QUBIT_PURPLE, trackerFor } from "../game/entangle";
 import { GATE_INFO, getContent, getLevel, nextLevel } from "../game/level";
 import { loadProgress, recordWin } from "../game/progress";
 import { earnsStar, Outcome, SimEvent, Simulation, START_HP } from "../game/sim";
@@ -27,6 +27,8 @@ interface TickAnim {
   after: QubitLook[];
   events: SimEvent[];
   half: boolean;
+  /** Entanglement triggers to fire when the qubits reach the gate. */
+  whens: string[];
 }
 
 const DEFAULT_TEXT: DialoguePage[] = [
@@ -42,7 +44,6 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     return () => {};
   }
   const level: Level = found;
-  const n = level.enemies.length;
   const board = new Board(level);
 
   /* ---------- state ---------- */
@@ -50,8 +51,8 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   let selected: number | null = null;
   let speedIdx = 2;
   let sim = new Simulation(level, []);
-  let tracker = new EntanglementTracker(n);
-  let colors = new Map<number, string>();
+  let tracker = trackerFor(level);
+  let colors = tracker.update(sim.state);
   let shown: QubitLook[] = [];
   let anim: TickAnim | null = null;
   let hp = START_HP;
@@ -236,7 +237,8 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   /**
    * Fires content triggers (once per visit each): "place:X" when a gate type is first
    * placed, "apply:X" when it first acts on a qubit, "damage" on the first hit taken,
-   * "entangle" when qubits first become entangled.
+   * "entangle" when qubits first become entangled, "disentangle" when an entangled
+   * qubit first becomes independent again.
    */
   function trigger(...whens: string[]) {
     const pages: DialoguePage[] = [];
@@ -276,10 +278,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   function placedHint(id: number): string {
     const p = board.placements.find((q) => q.id === id);
     if (!p) return "";
-    const g = level.gates[p.option];
-    let extra = "";
-    if (mode === "edit") extra = g.type === "CNOT" ? " Click to swap control/target, right-click to remove." : " Right-click to remove.";
-    return gateHint(p.option) + extra;
+    return gateHint(p.option) + (mode === "edit" ? " Right-click to remove." : "");
   }
 
   function qubitHint(k: number): string {
@@ -343,8 +342,8 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     mode = "edit";
     anim = null;
     sim = new Simulation(level, []);
-    tracker = new EntanglementTracker(n);
-    colors = new Map();
+    tracker = trackerFor(level);
+    colors = tracker.update(sim.state);
     shown = looks();
     hp = START_HP;
     overlay?.remove();
@@ -384,8 +383,14 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
         linked = true;
       }
     }
-    if (linked) colors = tracker.update(sim.state);
-    anim = { t: 0, startCells, wasExited, after: looks(), events, half: false };
+    const whens: string[] = [];
+    if (linked) {
+      const before = colors;
+      colors = tracker.update(sim.state);
+      if ([...colors.keys()].some((q) => !before.has(q))) whens.push("entangle");
+      if ([...before.keys()].some((q) => !colors.has(q))) whens.push("disentangle");
+    }
+    anim = { t: 0, startCells, wasExited, after: looks(), events, half: false, whens };
   }
 
   function halfTick(a: TickAnim) {
@@ -405,8 +410,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
         if (p) whens.push(`apply:${level.gates[p.option].type}`);
       } else if (e.damage > 1e-9) whens.push("damage");
     }
-    if (colors.size) whens.push("entangle");
-    trigger(...whens);
+    trigger(...whens, ...a.whens);
   }
 
   /* ---------- end of run ---------- */
@@ -506,7 +510,9 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   shown = looks();
   const newTerms = discoverForLevel(level.id);
   if (newTerms.length) {
-    screen.append(h("div", { class: "toast" }, `Ψ New in the encyclopedia: ${newTerms.map((e) => e.term).join(", ")}`));
+    const names = newTerms.map((e) => e.term);
+    const list = names.length > 4 ? `${names.slice(0, 3).join(", ")} and ${names.length - 3} more` : names.join(", ");
+    screen.append(h("div", { class: "toast" }, `Ψ New in the encyclopedia: ${list}`));
   }
   refreshEncyBadge();
   const startText = getContent(level.id, "start");

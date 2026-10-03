@@ -146,12 +146,18 @@ export class BoardView {
         g.append(s("rect", { x: x - c * 0.14, y: yTop - rr, width: c * 0.28, height: yBot - yTop + 2 * rr, fill: "transparent" }));
         g.append(s("line", { class: "wire", x1: x, x2: x, y1: yTop, y2: yBot }));
         g.append(s("circle", { class: "dot", cx: x, cy: this.px(p.lane + 1), r: 3 }));
+        const [yc, yt] = p.flipped ? [yBot, yTop] : [yTop, yBot];
         if (opt.type === "CNOT") {
-          const [yc, yt] = p.flipped ? [yBot, yTop] : [yTop, yBot];
           g.append(s("circle", { class: "dot", cx: x, cy: yc, r: rr * 0.6 }));
           g.append(s("circle", { class: "target", cx: x, cy: yt, r: rr }));
           g.append(s("line", { class: "wire", x1: x - rr, x2: x + rr, y1: yt, y2: yt }));
           g.append(s("line", { class: "wire", x1: x, x2: x, y1: yt - rr, y2: yt + rr }));
+        } else if (opt.type === "CY") {
+          // Control dot, and a small Y box on the target.
+          const b = rr * 1.7;
+          g.append(s("circle", { class: "dot", cx: x, cy: yc, r: rr * 0.6 }));
+          g.append(s("rect", { class: "box", x: x - b / 2, y: yt - b / 2, width: b, height: b, rx: 5 }));
+          g.append(s("text", { x, y: yt, "font-size": b * 0.62 }, "Y"));
         } else {
           g.append(s("circle", { class: "dot", cx: x, cy: yTop, r: rr * 0.6 }));
           g.append(s("circle", { class: "dot", cx: x, cy: yBot, r: rr * 0.6 }));

@@ -21,9 +21,9 @@ Stack: Vite + TypeScript, no framework. The board is SVG and progress is saved i
   right of the grid at the start.
 - **Unary gates** (I X Y Z H S T P) sit on a vertical grid line inside a lane. They act on
   every qubit that crosses that line.
-- **Binary gates** (CNOT, CZ) sit on a corner where a vertical line meets the boundary
+- **Binary gates** (CNOT, CZ, CY) sit on a corner where a vertical line meets the boundary
   between two lanes. They fire only when a qubit in *each* lane crosses that line on the
-  same tick. A CNOT starts with its control on the top lane; click it to swap.
+  same tick. A CNOT or CY starts with its control on the top lane; click it to swap.
 - Measurement at the left edge does not collapse the state. Damage is the expected
   value, so runs are deterministic.
 - You win if HP > 0 after every qubit has passed. You earn a ★ if the gates cost
@@ -58,6 +58,29 @@ Amplitudes and angles are expressions. They support `i`, `pi`/`π`, `e`, `sqrt`/
 `exp`, `+ - * / ^`, parentheses, and implicit multiplication. Examples: `1/sqrt2`,
 `(1+i)/2`, `exp(i*pi/4)/sqrt2`. States that aren't normalised are normalised with a
 console warning. Two enemies can't share the same lane and time.
+
+Enemies can also arrive **entangled**. Give `lanes` instead of `lane`, and list
+2^n amplitudes in ket order, with the first listed lane as the leftmost digit:
+
+```json
+{ "lanes": [0, 1], "time": 0, "amplitudes": ["1/sqrt2", "0", "0", "1/sqrt2"] }
+```
+
+This is the Bell pair (|00⟩ + |11⟩)/√2, with one qubit in lane 0 and one in lane 1.
+Members of an entangled group always share a `time`.
+
+### Checking a level
+
+`tests/levels.test.ts` keeps an answer key for levels 6–12. For each level it
+checks that:
+- the key is legal on the real board,
+- it wins with full HP at exactly `optimalCost`,
+- an exhaustive solver (`tests/solver.ts`) finds nothing cheaper that survives,
+- the level uses default gate costs.
+
+To check a new level, add its answer key there. The solver can also tell you a level's
+true cheapest win (`solve(level).minWin`) and give one cheapest perfect solution
+(`witness`).
 
 ### `content.json`: level text
 

@@ -1,11 +1,11 @@
 import levelsJson from "../data/levels.json";
 import contentJson from "../data/content.json";
 import gatesJson from "../data/gates.json";
-import { c, Complex } from "../quantum/complex";
+import { c } from "../quantum/complex";
 import { formatAngle } from "../quantum/format";
 import { isBinary, GateType } from "../quantum/gates";
 import { parseComplex, parseReal } from "../quantum/parse";
-import { ContentEntry, DialoguePage, GateInfo, Level, LevelData } from "./types";
+import { ContentEntry, DialoguePage, Enemy, EnemyGroup, GateInfo, Level, LevelData } from "./types";
 
 export const GATE_INFO = gatesJson as unknown as Record<GateType, GateInfo>;
 
@@ -26,22 +26,32 @@ export function resolveLevel(data: LevelData): Level {
   });
 
   const seen = new Set<string>();
-  const enemies = data.enemies.map((e, id) => {
-    if (e.lane < 0 || e.lane >= data.lanes) throw new Error(`${where}: enemy ${id} lane out of range`);
-    if (!Number.isInteger(e.time) || e.time < 0) throw new Error(`${where}: enemy ${id} time must be a non-negative integer`);
-    const key = `${e.lane}:${e.time}`;
-    if (seen.has(key)) throw new Error(`${where}: two enemies share lane ${e.lane} and time ${e.time}`);
-    seen.add(key);
-    let a = parseComplex(e.amplitudes[0]);
-    let b = parseComplex(e.amplitudes[1]);
-    const norm = Math.sqrt(a.re ** 2 + a.im ** 2 + b.re ** 2 + b.im ** 2);
-    if (norm === 0) throw new Error(`${where}: enemy ${id} has zero amplitudes`);
-    if (Math.abs(norm - 1) > 1e-6) {
-      console.warn(`${where}: enemy ${id} amplitudes not normalised (|ψ| = ${norm}); normalising.`);
-      a = c(a.re / norm, a.im / norm);
-      b = c(b.re / norm, b.im / norm);
+  const enemies: Enemy[] = [];
+  const groups: EnemyGroup[] = [];
+  data.enemies.forEach((e, i) => {
+    const what = `${where}: enemy ${i}`;
+    const lanes = "lanes" in e ? e.lanes : [e.lane];
+    if (!lanes.length) throw new Error(`${what} has no lanes`);
+    if (!Number.isInteger(e.time) || e.time < 0) throw new Error(`${what} time must be a non-negative integer`);
+    if (e.amplitudes.length !== 1 << lanes.length) {
+      throw new Error(`${what} needs ${1 << lanes.length} amplitudes for ${lanes.length} lane(s)`);
     }
-    return { id, lane: e.lane, time: e.time, amps: [a, b] as [Complex, Complex] };
+    const qubits = lanes.map((lane) => {
+      if (lane < 0 || lane >= data.lanes) throw new Error(`${what} lane ${lane} out of range`);
+      const key = `${lane}:${e.time}`;
+      if (seen.has(key)) throw new Error(`${where}: two enemies share lane ${lane} and time ${e.time}`);
+      seen.add(key);
+      enemies.push({ id: enemies.length, lane, time: e.time });
+      return enemies.length - 1;
+    });
+    let amps = e.amplitudes.map((a) => parseComplex(a));
+    const norm = Math.sqrt(amps.reduce((s, a) => s + a.re ** 2 + a.im ** 2, 0));
+    if (norm === 0) throw new Error(`${what} has zero amplitudes`);
+    if (Math.abs(norm - 1) > 1e-6) {
+      console.warn(`${what} amplitudes not normalised (|ψ| = ${norm}); normalising.`);
+      amps = amps.map((a) => c(a.re / norm, a.im / norm));
+    }
+    groups.push({ qubits, amps });
   });
   if (enemies.length > MAX_QUBITS) console.warn(`${where}: ${enemies.length} qubits may simulate slowly`);
 
@@ -54,6 +64,7 @@ export function resolveLevel(data: LevelData): Level {
     optimalCost: data.optimalCost,
     gates,
     enemies,
+    groups,
   };
 }
 

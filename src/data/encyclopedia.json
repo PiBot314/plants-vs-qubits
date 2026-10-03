@@ -257,7 +257,7 @@
     "id": "i",
     "term": "Identity gate",
     "category": "Gate",
-    "level": null,
+    "level": 8,
     "text": "Does nothing at all. The state passes through unchanged.",
     "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Identity_gate",
     "bloch": {
@@ -274,7 +274,7 @@
     "id": "s",
     "term": "S gate",
     "category": "Gate",
-    "level": null,
+    "level": 6,
     "text": "Multiplies the |1⟩ amplitude by i: a quarter turn around the z-axis. Two S gates make a Z.",
     "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Phase_shift",
     "bloch": {
@@ -291,7 +291,7 @@
     "id": "t",
     "term": "T gate",
     "category": "Gate",
-    "level": null,
+    "level": 7,
     "text": "Multiplies the |1⟩ amplitude by e^{iπ/4}: an eighth turn around the z-axis. Two T gates make an S.",
     "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Phase_shift",
     "bloch": {
@@ -326,7 +326,7 @@
     "id": "cnot",
     "term": "CNOT gate",
     "category": "Gate",
-    "level": null,
+    "level": 9,
     "text": "A two-qubit gate. It flips the target (⊕) qubit only when the control (●) qubit is |1⟩. If the control is in a superposition, the two qubits become entangled.",
     "wiki": "https://en.wikipedia.org/wiki/Controlled_NOT_gate",
     "bloch": {
@@ -347,20 +347,33 @@
     "id": "cz",
     "term": "CZ gate",
     "category": "Gate",
-    "level": null,
+    "level": 11,
     "text": "A two-qubit gate. It multiplies the |11⟩ amplitude by −1. Which qubit is the control doesn't matter.",
     "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Controlled_gates",
     "bloch": {
       "gate": "CZ",
-      "from": [
-        [
-          "1/sqrt2",
-          "1/sqrt2"
-        ],
-        [
-          "1/sqrt2",
-          "1/sqrt2"
-        ]
+      "joint": [
+        "1/2",
+        "1/2",
+        "1/2",
+        "-1/2"
+      ]
+    }
+  },
+  {
+    "id": "cy",
+    "term": "CY gate",
+    "category": "Gate",
+    "level": 12,
+    "text": "A two-qubit gate. It applies Y to the target qubit only when the control qubit is |1⟩. Because Y carries a factor of ±i, CY can untangle pairs whose shared state has an imaginary phase.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Controlled_gates",
+    "bloch": {
+      "gate": "CY",
+      "joint": [
+        "1/sqrt2",
+        "0",
+        "0",
+        "i/sqrt2"
       ]
     }
   },
@@ -368,7 +381,7 @@
     "id": "entanglement",
     "term": "Entanglement",
     "category": "Concept",
-    "level": null,
+    "level": 9,
     "text": "Two qubits are entangled when their joint state can't be split into one state for each. They no longer have amplitudes of their own, so the game colours them as a group and shows P(1) instead.",
     "wiki": "https://en.wikipedia.org/wiki/Quantum_entanglement",
     "bloch": {
@@ -389,8 +402,22 @@
     "id": "bell",
     "term": "Bell state",
     "category": "Concept",
-    "level": null,
+    "level": 9,
     "text": "A maximally entangled pair, such as 1/√2|00⟩ + 1/√2|11⟩. Measuring one qubit instantly tells you what the other will be.",
-    "wiki": "https://en.wikipedia.org/wiki/Bell_state"
+    "wiki": "https://en.wikipedia.org/wiki/Bell_state",
+    "bloch": {
+      "gate": "CNOT",
+      "from": [
+        [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "caption": "|+⟩ and |0⟩ through a CNOT: out comes the Bell pair 1/√2|00⟩ + 1/√2|11⟩."
+    }
   }
 ]

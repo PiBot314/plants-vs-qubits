@@ -87,3 +87,30 @@ describe("parseComplex", () => {
     expect(() => parseComplex("1/")).toThrow();
   });
 });
+
+describe("entangled starting states", () => {
+  it("fromGroups places a Bell pair on the right qubits", () => {
+    // qubit 1 is a lone |1>; qubits 0 and 2 share (|00> + |11>)/√2
+    const s = StateVector.fromGroups(3, [
+      { qubits: [0, 2], amps: [c(r), c(0), c(0), c(r)] },
+      { qubits: [1], amps: [c(0), c(1)] },
+    ]);
+    expect(s.re[0b010]).toBeCloseTo(r); // q0=0, q1=1, q2=0
+    expect(s.re[0b111]).toBeCloseTo(r);
+    expect(s.purity([0])).toBeCloseTo(0.5);
+    expect(s.purity([1])).toBeCloseTo(1);
+  });
+
+  it("ket order puts the first listed qubit on the left", () => {
+    // |01>: first qubit 0, second qubit 1
+    const s = StateVector.fromGroups(2, [{ qubits: [0, 1], amps: [c(0), c(1), c(0), c(0)] }]);
+    expect(s.marginalP0(0)).toBeCloseTo(1);
+    expect(s.marginalP0(1)).toBeCloseTo(0);
+  });
+
+  it("CY untangles (|00> + i|11>)/√2", () => {
+    const s = StateVector.fromGroups(2, [{ qubits: [0, 1], amps: [c(r), c(0), c(0), c(0, r)] }]);
+    s.applyControlled(0, 1, MATRICES.Y);
+    expect(s.purity([0])).toBeCloseTo(1);
+  });
+});

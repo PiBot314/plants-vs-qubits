@@ -36,6 +36,32 @@ export class StateVector {
     return s;
   }
 
+  /**
+   * Tensor product of independent groups of qubits. Each group lists its qubit ids and
+   * 2^m amplitudes in ket-label order: for qubits [a, b], amps are [|00⟩, |01⟩, |10⟩, |11⟩]
+   * with a's bit on the left.
+   */
+  static fromGroups(n: number, groups: { qubits: number[]; amps: Complex[] }[]): StateVector {
+    const s = new StateVector(n);
+    const size = 1 << n;
+    for (let i = 0; i < size; i++) {
+      let re = 1;
+      let im = 0;
+      for (const g of groups) {
+        const m = g.qubits.length;
+        let idx = 0;
+        for (let j = 0; j < m; j++) idx |= ((i >> g.qubits[j]) & 1) << (m - 1 - j);
+        const amp = g.amps[idx];
+        const nr = re * amp.re - im * amp.im;
+        im = re * amp.im + im * amp.re;
+        re = nr;
+      }
+      s.re[i] = re;
+      s.im[i] = im;
+    }
+    return s;
+  }
+
   clone(): StateVector {
     const s = new StateVector(this.n);
     s.re.set(this.re);
@@ -90,6 +116,23 @@ export class StateVector {
     const dim = 1 << m;
     const re = new Float64Array(dim * dim);
     const im = new Float64Array(dim * dim);
+    if (m === 1) {
+      // Fast path (called for every qubit every tick): rho_ab = sum over i with bit k clear.
+      const bit = 1 << qubits[0];
+      for (let i = 0; i < this.re.length; i++) {
+        if (i & bit) continue;
+        const j = i | bit;
+        const r0 = this.re[i], i0 = this.im[i], r1 = this.re[j], i1 = this.im[j];
+        re[0] += r0 * r0 + i0 * i0;
+        re[3] += r1 * r1 + i1 * i1;
+        // rho_10 = psi_1 * conj(psi_0)
+        re[2] += r1 * r0 + i1 * i0;
+        im[2] += i1 * r0 - r1 * i0;
+      }
+      re[1] = re[2];
+      im[1] = -im[2];
+      return { re, im, dim };
+    }
     let mask = 0;
     for (const q of qubits) mask |= 1 << q;
     // Group amplitudes by the state of the remaining qubits.

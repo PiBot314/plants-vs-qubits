@@ -7,11 +7,28 @@
     "budget": 3,
     "optimalCost": 2,
     "gates": [
-      { "type": "X", "cost": 2 }
+      {
+        "type": "X",
+        "cost": 2
+      }
     ],
     "enemies": [
-      { "amplitudes": ["1", "0"], "lane": 0, "time": 0 },
-      { "amplitudes": ["1", "0"], "lane": 0, "time": 2 }
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 0,
+        "time": 2
+      }
     ]
   },
   {
@@ -22,14 +39,44 @@
     "budget": 5,
     "optimalCost": 3,
     "gates": [
-      { "type": "X", "cost": 1 },
-      { "type": "Y", "cost": 1 },
-      { "type": "Z", "cost": 1 }
+      {
+        "type": "X",
+        "cost": 1
+      },
+      {
+        "type": "Y",
+        "cost": 1
+      },
+      {
+        "type": "Z",
+        "cost": 1
+      }
     ],
     "enemies": [
-      { "amplitudes": ["1", "0"], "lane": 0, "time": 0 },
-      { "amplitudes": ["1", "0"], "lane": 1, "time": 1 },
-      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 2, "time": 2 }
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 1,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 2
+      }
     ]
   },
   {
@@ -40,12 +87,32 @@
     "budget": 4,
     "optimalCost": 2,
     "gates": [
-      { "type": "H", "cost": 1 },
-      { "type": "Z", "cost": 1 }
+      {
+        "type": "H",
+        "cost": 1
+      },
+      {
+        "type": "Z",
+        "cost": 1
+      }
     ],
     "enemies": [
-      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 0, "time": 0 },
-      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 1, "time": 2 }
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 1,
+        "time": 2
+      }
     ]
   },
   {
@@ -56,13 +123,40 @@
     "budget": 7,
     "optimalCost": 5,
     "gates": [
-      { "type": "H", "cost": 1 },
-      { "type": "Z", "cost": 1 }
+      {
+        "type": "H",
+        "cost": 1
+      },
+      {
+        "type": "Z",
+        "cost": 1
+      }
     ],
     "enemies": [
-      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 0, "time": 0 },
-      { "amplitudes": ["1/sqrt2", "-1/sqrt2"], "lane": 1, "time": 1 },
-      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 2, "time": 2 }
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-1/sqrt2"
+        ],
+        "lane": 1,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 2
+      }
     ]
   },
   {
@@ -73,16 +167,622 @@
     "budget": 8,
     "optimalCost": 5,
     "gates": [
-      { "type": "X", "cost": 1 },
-      { "type": "Y", "cost": 1 },
-      { "type": "Z", "cost": 1 },
-      { "type": "H", "cost": 1 }
+      {
+        "type": "X",
+        "cost": 1
+      },
+      {
+        "type": "Y",
+        "cost": 1
+      },
+      {
+        "type": "Z",
+        "cost": 1
+      },
+      {
+        "type": "H",
+        "cost": 1
+      }
     ],
     "enemies": [
-      { "amplitudes": ["1", "0"], "lane": 0, "time": 0 },
-      { "amplitudes": ["1", "0"], "lane": 1, "time": 1 },
-      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 2, "time": 2 },
-      { "amplitudes": ["1/sqrt2", "-1/sqrt2"], "lane": 3, "time": 3 }
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 1,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-1/sqrt2"
+        ],
+        "lane": 3,
+        "time": 3
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Quarter-Turns",
+    "lanes": 2,
+    "columns": 4,
+    "budget": 7,
+    "optimalCost": 5,
+    "gates": [
+      {
+        "type": "S"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "Z"
+      }
+    ],
+    "enemies": [
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "i/sqrt2"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-i/sqrt2"
+        ],
+        "lane": 1,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "i/sqrt2"
+        ],
+        "lane": 0,
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-i/sqrt2"
+        ],
+        "lane": 1,
+        "time": 2
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Eighth-Turns",
+    "lanes": 2,
+    "columns": 4,
+    "budget": 7,
+    "optimalCost": 5,
+    "gates": [
+      {
+        "type": "T"
+      },
+      {
+        "type": "S"
+      },
+      {
+        "type": "H"
+      }
+    ],
+    "enemies": [
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(3*i*pi/4)/sqrt2"
+        ],
+        "lane": 1,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(3*i*pi/4)/sqrt2"
+        ],
+        "lane": 1,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(3*i*pi/4)/sqrt2"
+        ],
+        "lane": 1,
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 3
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(3*i*pi/4)/sqrt2"
+        ],
+        "lane": 1,
+        "time": 3
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 6
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(3*i*pi/4)/sqrt2"
+        ],
+        "lane": 1,
+        "time": 6
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 7
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(3*i*pi/4)/sqrt2"
+        ],
+        "lane": 1,
+        "time": 7
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 8
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(3*i*pi/4)/sqrt2"
+        ],
+        "lane": 1,
+        "time": 8
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 9
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(3*i*pi/4)/sqrt2"
+        ],
+        "lane": 1,
+        "time": 9
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Phase Sandbox",
+    "lanes": 3,
+    "columns": 3,
+    "budget": 9,
+    "optimalCost": 8,
+    "gates": [
+      {
+        "type": "I"
+      },
+      {
+        "type": "X"
+      },
+      {
+        "type": "Y"
+      },
+      {
+        "type": "Z"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "S"
+      },
+      {
+        "type": "T"
+      }
+    ],
+    "enemies": [
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(5*i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(5*i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(5*i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(5*i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 4
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(5*i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 5
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(5*i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 7
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "exp(5*i*pi/4)/sqrt2"
+        ],
+        "lane": 0,
+        "time": 8
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-i/sqrt2"
+        ],
+        "lane": 1,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-i/sqrt2"
+        ],
+        "lane": 1,
+        "time": 4
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-i/sqrt2"
+        ],
+        "lane": 1,
+        "time": 7
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 5
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 8
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Spooky Action",
+    "lanes": 2,
+    "columns": 5,
+    "budget": 7,
+    "optimalCost": 5,
+    "gates": [
+      {
+        "type": "CNOT"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "X"
+      },
+      {
+        "type": "Z"
+      }
+    ],
+    "enemies": [
+      {
+        "lanes": [
+          0,
+          1
+        ],
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "1/sqrt2"
+        ],
+        "time": 0
+      },
+      {
+        "lanes": [
+          0,
+          1
+        ],
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "1/sqrt2"
+        ],
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 1,
+        "time": 3
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Entanglement Sandbox",
+    "lanes": 3,
+    "columns": 6,
+    "budget": 10,
+    "optimalCost": 8,
+    "gates": [
+      {
+        "type": "CNOT"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "X"
+      },
+      {
+        "type": "Z"
+      }
+    ],
+    "enemies": [
+      {
+        "lanes": [
+          0,
+          1
+        ],
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "1/sqrt2"
+        ],
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 0,
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 2
+      },
+      {
+        "lanes": [
+          1,
+          2
+        ],
+        "amplitudes": [
+          "0",
+          "1/sqrt2",
+          "-1/sqrt2",
+          "0"
+        ],
+        "time": 4
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Phase Control",
+    "lanes": 2,
+    "columns": 5,
+    "budget": 8,
+    "optimalCost": 6,
+    "gates": [
+      {
+        "type": "CZ"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "X"
+      },
+      {
+        "type": "Z"
+      }
+    ],
+    "enemies": [
+      {
+        "lanes": [
+          0,
+          1
+        ],
+        "amplitudes": [
+          "1/2",
+          "1/2",
+          "1/2",
+          "-1/2"
+        ],
+        "time": 0
+      },
+      {
+        "lanes": [
+          0,
+          1
+        ],
+        "amplitudes": [
+          "1/2",
+          "1/2",
+          "1/2",
+          "-1/2"
+        ],
+        "time": 2
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Controlled Rotations",
+    "lanes": 2,
+    "columns": 5,
+    "budget": 6,
+    "optimalCost": 4,
+    "gates": [
+      {
+        "type": "CY"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "S"
+      },
+      {
+        "type": "X"
+      },
+      {
+        "type": "Z"
+      }
+    ],
+    "enemies": [
+      {
+        "lanes": [
+          0,
+          1
+        ],
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "i/sqrt2"
+        ],
+        "time": 0
+      },
+      {
+        "lanes": [
+          0,
+          1
+        ],
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "i/sqrt2"
+        ],
+        "time": 2
+      }
     ]
   }
 ]

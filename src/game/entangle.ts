@@ -1,4 +1,5 @@
 import { StateVector } from "../quantum/state";
+import { Level } from "./types";
 
 export const QUBIT_PURPLE = "#9b5cff";
 export const ENTANGLE_PALETTE = [
@@ -89,6 +90,13 @@ export class EntanglementTracker {
     this.colorOf = next;
     return next;
   }
+}
+
+/** A tracker that already knows which of the level's enemies start out entangled. */
+export function trackerFor(level: Level): EntanglementTracker {
+  const t = new EntanglementTracker(level.enemies.length);
+  for (const g of level.groups) for (let i = 1; i < g.qubits.length; i++) t.link(g.qubits[0], g.qubits[i]);
+  return t;
 }
 
 /** Splits `qubits` into minimal subsets whose reduced states are pure. */

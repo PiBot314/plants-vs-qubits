@@ -28,7 +28,7 @@ export class Simulation {
     readonly level: Level,
     readonly placements: Placement[],
   ) {
-    this.state = StateVector.fromProduct(level.enemies.map((e) => e.amps));
+    this.state = StateVector.fromGroups(level.enemies.length, level.groups);
     this.exited = level.enemies.map(() => false);
   }
 

@@ -11,13 +11,28 @@ export interface GateEntryData {
   angle?: string | number;
 }
 
-export interface EnemyData {
+/** A single enemy qubit. */
+export interface SingleEnemyData {
   /** [alpha, beta] as expressions, e.g. ["1/sqrt2", "-i/sqrt2"]. */
   amplitudes: [string, string];
   lane: number;
   /** Ticks until the qubit enters the grid. */
   time: number;
 }
+
+/** Several enemy qubits that arrive entangled, one per lane, side by side. */
+export interface EntangledEnemyData {
+  /** One qubit in each of these lanes, e.g. [0, 1]. */
+  lanes: number[];
+  /**
+   * 2^lanes.length amplitudes in ket-label order, where the first listed lane is the
+   * leftmost digit: for lanes [0, 1] that's [|00⟩, |01⟩, |10⟩, |11⟩].
+   */
+  amplitudes: string[];
+  time: number;
+}
+
+export type EnemyData = SingleEnemyData | EntangledEnemyData;
 
 export interface LevelData {
   id: number;
@@ -34,15 +49,19 @@ export type Amps = [string, string];
 
 /**
  * A Bloch sphere illustration attached to a dialogue page or encyclopedia entry.
- * - `gate` (+ optional `from`): animates that gate acting on the input qubit(s).
+ * - `gate` or `gates` (+ optional `from` / `joint`): animates the gate(s) acting on the input qubit(s).
  * - `tour`: glides between the listed states.
  */
 export interface BlochSpec {
   gate?: GateType;
+  /** Several single-qubit gates in a row, e.g. ["T", "T"]. */
+  gates?: GateType[];
   /** P gate angle, e.g. "pi/8". */
   angle?: string;
   /** Input state(s): one [α, β] per qubit. Defaults to |0⟩ (and |+⟩|0⟩ for two-qubit gates). */
   from?: Amps | Amps[];
+  /** Two-qubit gates only: an entangled starting state [|00⟩, |01⟩, |10⟩, |11⟩] (control on the left). */
+  joint?: string[];
   tour?: Amps[];
   caption?: string;
 }
@@ -80,7 +99,12 @@ export interface Enemy {
   id: number;
   lane: number;
   time: number;
-  amps: [Complex, Complex];
+}
+
+/** Qubits whose starting state is given together (size 1 for ordinary enemies). */
+export interface EnemyGroup {
+  qubits: number[];
+  amps: Complex[];
 }
 
 export interface Level {
@@ -92,6 +116,8 @@ export interface Level {
   optimalCost: number;
   gates: GateOption[];
   enemies: Enemy[];
+  /** Starting state, as a product of these groups. */
+  groups: EnemyGroup[];
 }
 
 /**
@@ -104,7 +130,7 @@ export interface Placement {
   option: number;
   lane: number;
   x: number;
-  /** CNOT only: control on the bottom lane instead of the top. */
+  /** CNOT/CY only: control on the bottom lane instead of the top. */
   flipped: boolean;
 }
 
