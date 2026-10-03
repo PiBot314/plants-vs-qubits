@@ -170,6 +170,18 @@ button.icon { width: 2.6em; height: 2.6em; padding: 0; display: grid; place-item
 .seg button:first-child { border-radius: 8px 0 0 8px; }
 .seg button:last-child { border-radius: 0 8px 8px 0; border-left: none; }
 .seg button.on { border-color: var(--accent); color: var(--accent); background: rgba(111, 227, 255, 0.12); }
+.qubit-bloch {
+  position: absolute; z-index: 7; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
+  padding: 0.5rem 0.7rem 0.6rem;
+  background: rgba(14, 17, 44, 0.94);
+  border: 1px solid var(--line-strong); border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  font-family: var(--mono); font-size: 0.72rem; color: var(--dim); text-align: center;
+}
+.qubit-bloch[hidden] { display: none; }
+.qubit-bloch .bv-sphere { width: 130px; height: 130px; }
+.qubit-bloch .qb-name { color: var(--fg); font-size: 0.8rem; }
 .controls { display: flex; align-items: center; gap: 0.6rem; }
 .controls .play { width: 2.9em; height: 2.9em; font-size: 1.65rem; border-radius: 50%; border-width: 2px; box-shadow: 0 0 16px rgba(111, 227, 255, 0.3); }
 
