@@ -74,7 +74,7 @@ export interface BlochSpec {
 
 export interface ContentEntry {
   level: number;
-  /** "start", "end", or an in-game trigger: "place:<GATE>", "apply:<GATE>", "damage", "entangle". */
+  /** "start", "end", or an in-game trigger: "place:<GATE>", "apply:<GATE>", "damage", "entangle", "disentangle". */
   when: string;
   text: string;
   /** Optional Bloch sphere illustration shown with this page. */

@@ -254,23 +254,6 @@
     "wiki": "https://en.wikipedia.org/wiki/Unitary_matrix"
   },
   {
-    "id": "i",
-    "term": "Identity gate",
-    "category": "Gate",
-    "level": 8,
-    "text": "Does nothing at all. The state passes through unchanged.",
-    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Identity_gate",
-    "bloch": {
-      "gate": "I",
-      "from": [
-        [
-          "1/sqrt2",
-          "1/sqrt2"
-        ]
-      ]
-    }
-  },
-  {
     "id": "s",
     "term": "S gate",
     "category": "Gate",
@@ -308,7 +291,7 @@
     "id": "p",
     "term": "Phase gate  P(φ)",
     "category": "Gate",
-    "level": null,
+    "level": 7,
     "text": "Multiplies the |1⟩ amplitude by e^{iφ}: a turn of angle φ around the z-axis. Z, S and T are P(π), P(π/2) and P(π/4).",
     "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Phase_shift",
     "bloch": {
@@ -321,6 +304,31 @@
         ]
       ]
     }
+  },
+  {
+    "id": "i",
+    "term": "Identity gate",
+    "category": "Gate",
+    "level": 8,
+    "text": "Does nothing at all. The state passes through unchanged.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Identity_gate",
+    "bloch": {
+      "gate": "I",
+      "from": [
+        [
+          "1/sqrt2",
+          "1/sqrt2"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "universal",
+    "term": "Universal gate set",
+    "category": "Concept",
+    "level": 8,
+    "text": "A set of gates that can build any quantum computation, to whatever precision you like. H and T can get as close as you want to any single-qubit rotation, and adding one two-qubit gate such as CNOT covers everything else. X, Y, Z and H on their own are not universal.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Universal_quantum_gates"
   },
   {
     "id": "cnot",
@@ -342,6 +350,57 @@
         ]
       ]
     }
+  },
+  {
+    "id": "entanglement",
+    "term": "Entanglement",
+    "category": "Concept",
+    "level": 9,
+    "text": "Two qubits are entangled when their joint state can't be split into one state for each. They no longer have amplitudes of their own, so the game colours them as a group and shows P(1) instead.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_entanglement",
+    "bloch": {
+      "gate": "CNOT",
+      "from": [
+        [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "bell",
+    "term": "Bell state",
+    "category": "Concept",
+    "level": 9,
+    "text": "A maximally entangled pair, such as 1/√2|00⟩ + 1/√2|11⟩. Measuring one qubit instantly tells you what the other will be.",
+    "wiki": "https://en.wikipedia.org/wiki/Bell_state",
+    "bloch": {
+      "gate": "CNOT",
+      "from": [
+        [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "caption": "|+⟩ and |0⟩ through a CNOT: out comes the Bell pair 1/√2|00⟩ + 1/√2|11⟩."
+    }
+  },
+  {
+    "id": "bellmeasurement",
+    "term": "Bell measurement",
+    "category": "Concept",
+    "level": 10,
+    "text": "Finding out which of the four Bell states a pair is in. A CNOT followed by an H on the control turns Φ+, Φ−, Ψ+ and Ψ− into |00⟩, |10⟩, |01⟩ and |11⟩, which an ordinary measurement can then read. It's a key step in quantum teleportation.",
+    "wiki": "https://en.wikipedia.org/wiki/Bell_state#Bell_state_measurement"
   },
   {
     "id": "cz",
@@ -400,6 +459,22 @@
     }
   },
   {
+    "id": "controlled",
+    "term": "Controlled gate",
+    "category": "Concept",
+    "level": 14,
+    "text": "Any single-qubit gate U can be given a control qubit: the new gate applies U to the target only when the control is |1⟩. CNOT, CY and CZ are controlled X, Y and Z. They differ only by single-qubit gates on the target, so any one of them plus single-qubit gates can build the others.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Controlled_gates"
+  },
+  {
+    "id": "routing",
+    "term": "Qubit routing",
+    "category": "Concept",
+    "level": 15,
+    "text": "On real quantum chips each qubit can only interact with a few neighbours. To run a two-qubit gate on distant qubits, a compiler first moves them together, usually with SWAPs, and tries to use as few as possible, since every extra gate adds noise.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_circuit"
+  },
+  {
     "id": "ghz",
     "term": "GHZ state",
     "category": "Concept",
@@ -423,49 +498,6 @@
         1
       ],
       "caption": "Peeling a GHZ triad: the target goes free, and the other two stay as a Bell pair."
-    }
-  },
-  {
-    "id": "entanglement",
-    "term": "Entanglement",
-    "category": "Concept",
-    "level": 9,
-    "text": "Two qubits are entangled when their joint state can't be split into one state for each. They no longer have amplitudes of their own, so the game colours them as a group and shows P(1) instead.",
-    "wiki": "https://en.wikipedia.org/wiki/Quantum_entanglement",
-    "bloch": {
-      "gate": "CNOT",
-      "from": [
-        [
-          "1/sqrt2",
-          "1/sqrt2"
-        ],
-        [
-          "1",
-          "0"
-        ]
-      ]
-    }
-  },
-  {
-    "id": "bell",
-    "term": "Bell state",
-    "category": "Concept",
-    "level": 9,
-    "text": "A maximally entangled pair, such as 1/√2|00⟩ + 1/√2|11⟩. Measuring one qubit instantly tells you what the other will be.",
-    "wiki": "https://en.wikipedia.org/wiki/Bell_state",
-    "bloch": {
-      "gate": "CNOT",
-      "from": [
-        [
-          "1/sqrt2",
-          "1/sqrt2"
-        ],
-        [
-          "1",
-          "0"
-        ]
-      ],
-      "caption": "|+⟩ and |0⟩ through a CNOT: out comes the Bell pair 1/√2|00⟩ + 1/√2|11⟩."
     }
   }
 ]
