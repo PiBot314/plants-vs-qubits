@@ -84,7 +84,7 @@ The project uses Vite + TypeScript with no frontend framework. Progress is saved
 The current level set includes:
 
 1. First Flip
-2. Spooky Pair
+2. Measure Up
 3. The H Paradox
 4. Sign Matters
 5. Full Arsenal
@@ -204,6 +204,7 @@ true cheapest win (`solve(level).minWin`) and give one cheapest perfect solution
 | `apply:<GATE>`  | The first time that gate type acts on a qubit, e.g. `apply:Z`. The run pauses until the dialogue closes |
 | `damage`        | The first time a qubit deals damage                                   |
 | `entangle`      | The first time qubits become entangled                                |
+| `disentangle`   | The first time entangled qubits split back into separate states        |
 
 Each trigger fires once per visit to a level. Every page shown also goes into the
 text box at the bottom, where the player can page back through it or reopen the
