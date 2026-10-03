@@ -3,9 +3,11 @@ const KEY = "blochit.settings";
 export interface Settings {
   /** Index into the game screen's speed list. */
   speedIdx: number;
+  /** What a qubit shows inside its circle. */
+  qubitLabels: "amplitudes" | "bloch";
 }
 
-const DEFAULTS: Settings = { speedIdx: 2 };
+const DEFAULTS: Settings = { speedIdx: 2, qubitLabels: "amplitudes" };
 
 export function loadSettings(): Settings {
   try {

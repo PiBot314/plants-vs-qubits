@@ -19,7 +19,6 @@ export interface BoardHandlers {
   onGateRemove(id: number): void;
   onGateHover(id: number | null): void;
   onQubitHover(k: number | null): void;
-  onQubitClick(k: number): void;
 }
 
 interface QubitEl {
@@ -205,7 +204,6 @@ export class BoardView {
         "g",
         {
           class: "qubit",
-          onclick: () => this.handlers.onQubitClick(k),
           onmouseenter: () => this.handlers.onQubitHover(k),
           onmouseleave: () => this.handlers.onQubitHover(null),
         },
