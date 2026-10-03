@@ -2,7 +2,7 @@ import { isDirected } from "../quantum/gates";
 import { Level, Placement } from "./types";
 
 type Action =
-  | { kind: "place"; p: Placement }
+  | { kind: "place"; p: Placement; replaced: Placement[] }
   | { kind: "remove"; p: Placement }
   | { kind: "flip"; id: number };
 
@@ -36,24 +36,34 @@ export class Board {
     return this.placements.find((p) => p.x === x && this.lanesFor(p.option, p.lane).includes(lane));
   }
 
-  /** Returns a reason the gate can't go there, or null if it can. */
+  /** Placements a gate at (lane, x) would overwrite. */
+  displaced(option: number, lane: number, x: number): Placement[] {
+    const found = this.lanesFor(option, lane).map((l) => this.occupant(l, x));
+    return [...new Set(found.filter((p): p is Placement => p !== undefined))];
+  }
+
+  /** Returns a reason the gate can't go there, or null if it can. Occupied spots are overwritten. */
   checkPlacement(option: number, lane: number, x: number): string | null {
     const g = this.level.gates[option];
     if (!g) return "Unknown gate";
     if (x < 1 || x > this.level.columns) return "Gates go on interior grid lines";
     const lanes = this.lanesFor(option, lane);
     if (lane < 0 || lanes[lanes.length - 1] >= this.level.lanes) return "Out of bounds";
-    if (lanes.some((l) => this.occupant(l, x))) return "That spot is taken";
-    if (g.cost > this.coins) return "Not enough coins";
+    const old = this.displaced(option, lane, x);
+    if (old.length === 1 && old[0].option === option && old[0].lane === lane) return "That gate is already there";
+    const refund = old.reduce((s, p) => s + this.level.gates[p.option].cost, 0);
+    if (g.cost > this.coins + refund) return "Not enough coins";
     return null;
   }
 
   place(option: number, lane: number, x: number): Placement | string {
     const err = this.checkPlacement(option, lane, x);
     if (err) return err;
+    const replaced = this.displaced(option, lane, x);
+    this.placements = this.placements.filter((q) => !replaced.includes(q));
     const p: Placement = { id: this.nextId++, option, lane, x, flipped: false };
     this.placements.push(p);
-    this.history.push({ kind: "place", p });
+    this.history.push({ kind: "place", p, replaced });
     return p;
   }
 
@@ -74,7 +84,10 @@ export class Board {
   undo(): void {
     const a = this.history.pop();
     if (!a) return;
-    if (a.kind === "place") this.placements = this.placements.filter((q) => q.id !== a.p.id);
+    if (a.kind === "place") {
+      this.placements = this.placements.filter((q) => q.id !== a.p.id);
+      this.placements.push(...a.replaced);
+    }
     else if (a.kind === "remove") this.placements.push(a.p);
     else {
       const p = this.placements.find((q) => q.id === a.id);

@@ -183,6 +183,8 @@ button.icon { width: 2.6em; height: 2.6em; padding: 0; display: grid; place-item
 .board .queue-label { fill: var(--dim); font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; }
 .board .hot { fill: rgba(111, 227, 255, 0.06); stroke: rgba(111, 227, 255, 0.35); stroke-dasharray: 3 3; cursor: pointer; transition: fill 0.12s; }
 .board .hot:hover { fill: rgba(111, 227, 255, 0.35); stroke: var(--accent); stroke-dasharray: none; }
+.board .hot.over { fill: rgba(255, 209, 102, 0.08); stroke: rgba(255, 209, 102, 0.55); }
+.board .hot.over:hover { fill: rgba(255, 209, 102, 0.3); stroke: var(--gold); }
 .board .gate { cursor: pointer; }
 .board .gate .box { fill: #0d1233; stroke: var(--accent); stroke-width: 1.5; }
 .board .gate .wire { stroke: var(--accent); stroke-width: 2; }
