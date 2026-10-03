@@ -153,7 +153,7 @@ button.icon { width: 2.6em; height: 2.6em; padding: 0; display: grid; place-item
 .textbox .pager { font-family: var(--mono); font-size: 0.75rem; color: var(--dim); display: flex; align-items: center; gap: 0.5rem; }
 .textbox .pager button { padding: 0.2em 0.6em; }
 .controls { display: flex; align-items: center; gap: 0.6rem; }
-.controls .play { width: 3.2em; height: 3.2em; font-size: 1.2rem; }
+.controls .play { width: 2.9em; height: 2.9em; font-size: 1.65rem; border-radius: 50%; border-width: 2px; box-shadow: 0 0 16px rgba(111, 227, 255, 0.3); }
 
 /* ---------- board svg ---------- */
 .board .lane-line { stroke: var(--line); stroke-width: 1; }
