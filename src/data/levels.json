@@ -4,12 +4,11 @@
     "name": "First Flip",
     "lanes": 1,
     "columns": 4,
-    "budget": 3,
-    "optimalCost": 2,
+    "budget": 2,
+    "optimalCost": 1,
     "gates": [
       {
-        "type": "X",
-        "cost": 2
+        "type": "X"
       }
     ],
     "enemies": [
@@ -36,20 +35,17 @@
     "name": "Spooky Pair (dummy)",
     "lanes": 3,
     "columns": 4,
-    "budget": 5,
+    "budget": 3,
     "optimalCost": 3,
     "gates": [
       {
-        "type": "X",
-        "cost": 1
+        "type": "X"
       },
       {
-        "type": "Y",
-        "cost": 1
+        "type": "Y"
       },
       {
-        "type": "Z",
-        "cost": 1
+        "type": "Z"
       }
     ],
     "enemies": [
@@ -84,16 +80,14 @@
     "name": "The H Paradox",
     "lanes": 2,
     "columns": 5,
-    "budget": 4,
-    "optimalCost": 2,
+    "budget": 5,
+    "optimalCost": 4,
     "gates": [
       {
-        "type": "H",
-        "cost": 1
+        "type": "H"
       },
       {
-        "type": "Z",
-        "cost": 1
+        "type": "Z"
       }
     ],
     "enemies": [
@@ -110,8 +104,24 @@
           "1/sqrt2",
           "1/sqrt2"
         ],
+        "lane": 0,
+        "time": 3
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
         "lane": 1,
         "time": 2
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 1,
+        "time": 5
       }
     ]
   },
@@ -124,12 +134,10 @@
     "optimalCost": 5,
     "gates": [
       {
-        "type": "H",
-        "cost": 1
+        "type": "H"
       },
       {
-        "type": "Z",
-        "cost": 1
+        "type": "Z"
       }
     ],
     "enemies": [
@@ -144,6 +152,14 @@
       {
         "amplitudes": [
           "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 0,
+        "time": 3
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
           "-1/sqrt2"
         ],
         "lane": 1,
@@ -152,10 +168,26 @@
       {
         "amplitudes": [
           "1/sqrt2",
+          "-1/sqrt2"
+        ],
+        "lane": 1,
+        "time": 4
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
           "1/sqrt2"
         ],
         "lane": 2,
         "time": 2
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 5
       }
     ]
   },
@@ -164,24 +196,20 @@
     "name": "Full Arsenal",
     "lanes": 4,
     "columns": 5,
-    "budget": 8,
+    "budget": 7,
     "optimalCost": 5,
     "gates": [
       {
-        "type": "X",
-        "cost": 1
+        "type": "X"
       },
       {
-        "type": "Y",
-        "cost": 1
+        "type": "Y"
       },
       {
-        "type": "Z",
-        "cost": 1
+        "type": "Z"
       },
       {
-        "type": "H",
-        "cost": 1
+        "type": "H"
       }
     ],
     "enemies": [
@@ -198,8 +226,24 @@
           "1",
           "0"
         ],
+        "lane": 0,
+        "time": 4
+      },
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
         "lane": 1,
         "time": 1
+      },
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 1,
+        "time": 5
       },
       {
         "amplitudes": [
@@ -212,10 +256,26 @@
       {
         "amplitudes": [
           "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 2,
+        "time": 6
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
           "-1/sqrt2"
         ],
         "lane": 3,
         "time": 3
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-1/sqrt2"
+        ],
+        "lane": 3,
+        "time": 7
       }
     ]
   },
@@ -788,27 +848,39 @@
   {
     "id": 13,
     "name": "Swap Meet",
-    "lanes": 2,
-    "columns": 4,
-    "budget": 4,
-    "optimalCost": 4,
+    "lanes": 3,
+    "columns": 6,
+    "budget": 8,
+    "optimalCost": 6,
     "gates": [
       {
-        "type": "SWAP",
-        "cost": 3
+        "type": "SWAP"
       },
       {
-        "type": "X",
-        "cost": 1
+        "type": "CNOT"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "X"
+      },
+      {
+        "type": "Z"
       }
     ],
     "enemies": [
       {
+        "lanes": [
+          0,
+          2
+        ],
         "amplitudes": [
-          "1",
+          "0",
+          "1/sqrt2",
+          "-1/sqrt2",
           "0"
         ],
-        "lane": 0,
         "time": 0
       },
       {
@@ -818,6 +890,27 @@
         ],
         "lane": 1,
         "time": 0
+      },
+      {
+        "lanes": [
+          0,
+          2
+        ],
+        "amplitudes": [
+          "0",
+          "1/sqrt2",
+          "-1/sqrt2",
+          "0"
+        ],
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "0",
+          "1"
+        ],
+        "lane": 1,
+        "time": 2
       }
     ]
   }

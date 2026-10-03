@@ -11,6 +11,28 @@ import { solve } from "./solver";
  */
 type Move = { gate: string; lane: number; x: number; flip?: boolean };
 const SOLUTIONS: Record<number, Move[]> = {
+  1: [{ gate: "X", lane: 0, x: 2 }],
+  // Level 2 has no key: its |+⟩ lane can't be fixed without H, which arrives in level 3.
+  3: [
+    { gate: "Z", lane: 0, x: 5 },
+    { gate: "H", lane: 0, x: 4 },
+    { gate: "Z", lane: 1, x: 5 },
+    { gate: "H", lane: 1, x: 4 },
+  ],
+  4: [
+    { gate: "Z", lane: 0, x: 5 },
+    { gate: "H", lane: 0, x: 4 },
+    { gate: "H", lane: 1, x: 4 },
+    { gate: "Z", lane: 2, x: 5 },
+    { gate: "H", lane: 2, x: 4 },
+  ],
+  5: [
+    { gate: "X", lane: 0, x: 4 },
+    { gate: "Y", lane: 1, x: 4 },
+    { gate: "Z", lane: 2, x: 5 },
+    { gate: "H", lane: 2, x: 4 },
+    { gate: "H", lane: 3, x: 4 },
+  ],
   6: [
     { gate: "S", lane: 0, x: 4 },
     { gate: "H", lane: 0, x: 3 },
@@ -60,6 +82,11 @@ const SOLUTIONS: Record<number, Move[]> = {
     { gate: "X", lane: 0, x: 5 },
     { gate: "CY", lane: 0, x: 4, flip: true },
     { gate: "H", lane: 1, x: 3 },
+  ],
+  13: [
+    { gate: "SWAP", lane: 0, x: 6 },
+    { gate: "CNOT", lane: 1, x: 5 },
+    { gate: "H", lane: 1, x: 4 },
   ],
 };
 
