@@ -132,3 +132,27 @@ export function formatKetSum(amps: Complex[], nQubits: number): string {
   });
   return terms.join(" + ").replace(/\+ −/g, "− ");
 }
+
+export interface BlochAngles {
+  theta: number;        // polar angle, 0..π
+  phi: number | null;   // azimuth, 0..2π; null at the poles where it's undefined
+}
+
+export function blochAngles(a: Complex, b: Complex): BlochAngles {
+  const ra = Math.hypot(a.re, a.im);
+  const rb = Math.hypot(b.re, b.im);
+  const theta = 2 * Math.atan2(rb, ra);
+  if (ra < EPS || rb < EPS) return { theta, phi: null };
+  const TAU = 2 * Math.PI;
+  let phi = Math.atan2(b.im, b.re) - Math.atan2(a.im, a.re);
+  phi = ((phi % TAU) + TAU) % TAU;
+  if (TAU - phi < EPS) phi = 0;
+  return { theta, phi };
+}
+
+const angleStr = (x: number) => formatAngle(x) ?? x.toFixed(2);
+
+/** Two short lines for the qubit circle: ["θ=π/2", "φ=π/4"]. */
+export function formatBloch({ theta, phi }: BlochAngles): [string, string] {
+  return [`θ=${angleStr(theta)}`, phi === null ? "φ=—" : `φ=${angleStr(phi)}`];
+}

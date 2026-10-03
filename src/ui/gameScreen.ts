@@ -13,12 +13,20 @@ import { openEncyclopedia } from "./encyclopedia";
 import { modalOpen } from "./modal";
 import { richText } from "./richText";
 import { discoverForLevel, hasUnseen } from "../game/encyclopedia";
+import { blochAngles, formatBloch} from "../quantum/format";
+import { Complex } from "../quantum/complex";
 
 const SPEEDS = [0.25, 0.5, 1, 2, 4];
 const BASE_TICK_MS = 900;
 
 type Mode = "edit" | "playing" | "paused" | "done";
-type QubitLook = Pick<QubitRender, "color" | "lines" | "kets">;
+// type QubitLook = Pick<QubitRender, "color" | "lines" | "kets">;
+
+interface QubitLook {
+  color: string;
+  state: [Complex, Complex] | null;  // null → entangled/mixed: no single-qubit state
+  p1: number;
+}
 
 interface TickAnim {
   t: number;
@@ -145,18 +153,32 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     },
     onGateHover: (id) => setHint(id === null ? null : placedHint(id)),
     onQubitHover: (k) => setHint(k === null ? null : qubitHint(k)),
+    onQubitClick: (k) => {
+      if (!shown[k].state) { warn("Entangled qubits have no single Bloch angles"); return; }
+      if (!bloch.delete(k)) bloch.add(k);
+      view.drawQubits(qubitRenders());
+    },
   });
   wrap.append(view.el);
 
   /* ---------- qubit display ---------- */
-  function look(k: number): QubitLook {
+  const bloch = new Set<number>();  // qubits currently showing Bloch angles (session only)
+
+  function looks(k: number): QubitLook {
     const col = colors.get(k);
-    if (col) return { color: col, lines: ["P(1)", formatReal(1 - sim.state.marginalP0(k))], kets: false };
-    const st = sim.state.subsystemState([k]);
-    if (!st) return { color: QUBIT_PURPLE, lines: ["P(1)", formatReal(1 - sim.state.marginalP0(k))], kets: false };
-    return { color: QUBIT_PURPLE, lines: [formatComplex(st[0]), formatComplex(st[1])], kets: true };
+    const st = col ? null : sim.state.subsystemState([k]);
+    return {
+      color: col ?? QUBIT_PURPLE,
+      state: st ? [st[0], st[1]] : null,
+      p1: 1 - sim.state.marginalP0(k),
+    };
   }
-  const looks = () => level.enemies.map((_, k) => look(k));
+  
+  function labels(k: number, lk: QubitLook): Pick<QubitRender, "lines" | "kets"> {
+    if (!lk.state) return { lines: ["P(1)", formatReal(lk.p1)], kets: false };
+    if (bloch.has(k)) return { lines: formatBloch(blochAngles(lk.state[0], lk.state[1])), kets: false };
+    return { lines: [formatComplex(lk.state[0]), formatComplex(lk.state[1])], kets: true };
+  }
 
   function qubitRenders(): QubitRender[] {
     return level.enemies.map((e, k) => {
@@ -168,7 +190,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
         if (anim.wasExited[k]) opacity = 0;
         else if (sim.exited[k]) opacity = t < 0.5 ? 1 : Math.max(0, 1 - (t - 0.5) * 2.2);
       }
-      return { pos, lane: e.lane, opacity, ...shown[k] };
+      return { pos, lane: e.lane, opacity, color: shown[k].color, ...labels(k, shown[k]) };
     });
   }
 
@@ -285,6 +307,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   function qubitHint(k: number): string {
     const e = level.enemies[k];
     const p0 = formatReal(sim.state.marginalP0(k));
+    const st = shown[k].state;
     if (colors.has(k)) {
       const group = tracker.groups(sim.state).find((g) => g.includes(k)) ?? [k];
       const st = sim.state.subsystemState(group);
@@ -292,8 +315,9 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       const joint = st ? formatKetSum(st, group.length) : "(mixed)";
       return `Entangled |${names}⟩ = ${joint} · P(0) of q${k + 1} = ${p0}`;
     }
-    const [a, b] = shown[k].lines;
-    return `q${k + 1} · lane ${e.lane + 1} · ${a}|0⟩ + ${b}|1⟩ · P(0) = ${p0} → ${formatReal(sim.state.marginalP0(k) * 100)} damage`;
+    if (!st) return `q${k + 1} · lane ${e.lane + 1} · P(0) = ${p0}`;
+    const [t, p] = formatBloch(blochAngles(st[0], st[1]));
+    return `q${k + 1} · ${formatComplex(st[0])}|0⟩ + ${formatComplex(st[1])}|1⟩ · ${t}, ${p} · P(0) = ${p0} → ${formatReal(sim.state.marginalP0(k) * 100)} damage · click to switch`;
   }
 
   /* ---------- rendering ---------- */
@@ -345,7 +369,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     sim = new Simulation(level, []);
     tracker = new EntanglementTracker(n);
     colors = new Map();
-    shown = looks();
+    shown = level.enemies.map((_, k) => looks(k));
     hp = START_HP;
     overlay?.remove();
     overlay = null;
@@ -385,7 +409,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       }
     }
     if (linked) colors = tracker.update(sim.state);
-    anim = { t: 0, startCells, wasExited, after: looks(), events, half: false };
+    anim = { t: 0, startCells, wasExited, after: level.enemies.map((_, k) => looks(k)), events, half: false };
   }
 
   function halfTick(a: TickAnim) {
@@ -503,7 +527,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   }
 
   /* ---------- mount ---------- */
-  shown = looks();
+  shown = level.enemies.map((_, k) => looks(k));
   const newTerms = discoverForLevel(level.id);
   if (newTerms.length) {
     screen.append(h("div", { class: "toast" }, `Ψ New in the encyclopedia: ${newTerms.map((e) => e.term).join(", ")}`));
@@ -526,3 +550,4 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     window.removeEventListener("keydown", onKey);
   };
 }
+
