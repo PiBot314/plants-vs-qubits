@@ -65,8 +65,20 @@ console warning. Two enemies can't share the same lane and time.
 { "level": 1, "when": "start", "text": "..." }
 ```
 
-`start` entries are paged through in the in-game text box. `end` entries show on the
-level-complete dialog.
+`when` decides when the text appears:
+
+| `when`          | Shown                                                                  |
+| --------------- | ---------------------------------------------------------------------- |
+| `start`         | In a centred dialogue when the level opens, until the level is beaten once |
+| `end`           | On the level-complete dialog                                          |
+| `place:<GATE>`  | The first time the player places that gate type, e.g. `place:X`       |
+| `apply:<GATE>`  | The first time that gate type acts on a qubit, e.g. `apply:Z`. The run pauses until the dialogue closes |
+| `damage`        | The first time a qubit deals damage                                   |
+| `entangle`      | The first time qubits become entangled                                |
+
+Each trigger fires once per visit to a level. Every page shown also goes into the
+text box at the bottom, where the player can page back through it or reopen the
+centred dialogue with ⤢.
 
 ### `gates.json`
 

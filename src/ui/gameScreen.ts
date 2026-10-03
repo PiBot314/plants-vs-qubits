@@ -2,12 +2,14 @@ import type { Navigate } from "../main";
 import { Board } from "../game/board";
 import { EntanglementTracker, QUBIT_PURPLE } from "../game/entangle";
 import { GATE_INFO, getContent, getLevel, nextLevel } from "../game/level";
-import { recordWin } from "../game/progress";
+import { loadProgress, recordWin } from "../game/progress";
 import { earnsStar, Outcome, SimEvent, Simulation, START_HP } from "../game/sim";
 import { Level } from "../game/types";
 import { formatComplex, formatKetSum, formatReal } from "../quantum/format";
 import { BoardView, QubitRender } from "./boardView";
+import { Dialogue, openDialogue } from "./dialogue";
 import { Cleanup, h } from "./dom";
+import { modalOpen } from "./modal";
 
 const SPEEDS = [0.25, 0.5, 1, 2, 4];
 const BASE_TICK_MS = 900;
@@ -49,9 +51,11 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   let anim: TickAnim | null = null;
   let hp = START_HP;
 
-  const startMsgs = getContent(level.id, "start");
-  const messages = startMsgs.length ? startMsgs : DEFAULT_TEXT;
+  // Every dialogue page seen this visit; the bottom text box pages through these.
+  const log: string[] = [];
   let msgIdx = 0;
+  let dialogue: Dialogue | null = null;
+  const fired = new Set<string>();
   let hint: { text: string; cls: string } | null = null;
   let warnTimer = 0;
 
@@ -77,7 +81,8 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   const pageEl = h("span");
   const prevBtn = h("button", { title: "Previous", onclick: () => page(-1) }, "‹");
   const nextBtn = h("button", { title: "Next", onclick: () => page(1) }, "›");
-  const pager = h("div", { class: "pager" }, prevBtn, pageEl, nextBtn);
+  const expandBtn = h("button", { class: "expand", title: "Open dialogue", onclick: () => reopenDialogue() }, "⤢");
+  const pager = h("div", { class: "pager" }, prevBtn, pageEl, nextBtn, expandBtn);
   const speedLabel = h("span");
   const speedInput = h("input", { type: "range", min: 0, max: SPEEDS.length - 1, step: 1, value: speedIdx });
   speedInput.addEventListener("input", () => {
@@ -114,9 +119,11 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     onSlot: (lane, x) => {
       if (selected === null || mode !== "edit") return;
       const r = board.place(selected, lane, x);
+      const type = level.gates[selected].type;
       if (typeof r === "string") warn(r);
       else if (level.gates[selected].cost > board.coins) selected = null;
       renderBoard();
+      if (typeof r !== "string") trigger(`place:${type}`);
     },
     onGateClick: (id) => {
       if (mode !== "edit") return;
@@ -167,16 +174,60 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
       return;
     }
     msgEl.className = "msg";
-    msgEl.textContent = messages[msgIdx];
-    pager.style.visibility = messages.length > 1 ? "visible" : "hidden";
-    pageEl.textContent = `${msgIdx + 1}/${messages.length}`;
+    msgEl.textContent = log[msgIdx];
+    pager.style.visibility = "visible";
+    pageEl.textContent = `${msgIdx + 1}/${log.length}`;
     prevBtn.disabled = msgIdx === 0;
-    nextBtn.disabled = msgIdx === messages.length - 1;
+    nextBtn.disabled = msgIdx === log.length - 1;
   }
 
   function page(d: number) {
-    msgIdx = Math.max(0, Math.min(messages.length - 1, msgIdx + d));
+    msgIdx = Math.max(0, Math.min(log.length - 1, msgIdx + d));
     renderText();
+  }
+
+  /* ---------- dialogue ---------- */
+  /** Adds pages to the log and, if `popup`, shows them in the centre of the screen. */
+  function say(pages: string[], popup = true) {
+    if (!pages.length) return;
+    const first = log.length;
+    log.push(...pages);
+    msgIdx = first;
+    renderText();
+    if (popup) showDialogue(first);
+  }
+
+  function showDialogue(start: number) {
+    dialogue?.close();
+    hint = null;
+    dialogue = openDialogue(screen, log, {
+      title: `Level ${level.id} · ${level.name}`,
+      start,
+      onClose: (last) => {
+        dialogue = null;
+        msgIdx = last;
+        renderText();
+      },
+    });
+  }
+
+  function reopenDialogue() {
+    if (log.length) showDialogue(msgIdx);
+  }
+
+  /**
+   * Fires content triggers (once per visit each): "place:X" when a gate type is first
+   * placed, "apply:X" when it first acts on a qubit, "damage" on the first hit taken,
+   * "entangle" when qubits first become entangled.
+   */
+  function trigger(...whens: string[]) {
+    const pages: string[] = [];
+    for (const w of whens) {
+      if (fired.has(w)) continue;
+      fired.add(w);
+      pages.push(...getContent(level.id, w));
+    }
+    say(pages);
   }
 
   function setHint(text: string | null) {
@@ -286,7 +337,6 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     resetRun();
     board.clear();
     selected = null;
-    msgIdx = 0;
     hint = null;
     renderText();
     renderBoard();
@@ -329,6 +379,16 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
     }
     hp = sim.hp;
     renderHud();
+
+    const whens: string[] = [];
+    for (const e of a.events) {
+      if (e.kind === "gate") {
+        const p = sim.placements.find((q) => q.id === e.placementId);
+        if (p) whens.push(`apply:${level.gates[p.option].type}`);
+      } else if (e.damage > 1e-9) whens.push("damage");
+    }
+    if (colors.size) whens.push("entangle");
+    trigger(...whens);
   }
 
   /* ---------- end of run ---------- */
@@ -388,11 +448,16 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
   function frame(now: number) {
     const dt = Math.min(100, now - last);
     last = now;
-    if (mode === "playing") {
+    // Open dialogues/modals pause the run.
+    if (mode === "playing" && !modalOpen()) {
       if (!anim) beginTick();
       const a = anim!;
       a.t += dt / (BASE_TICK_MS / SPEEDS[speedIdx]);
-      if (!a.half && a.t >= 0.5) halfTick(a);
+      if (!a.half && a.t >= 0.5) {
+        halfTick(a);
+        // A triggered dialogue freezes the qubits on the line they just crossed.
+        if (modalOpen()) a.t = 0.5;
+      }
       view.drawQubits(qubitRenders());
       if (a.t >= 1) {
         anim = null;
@@ -421,7 +486,9 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
 
   /* ---------- mount ---------- */
   shown = looks();
-  renderText();
+  const startText = getContent(level.id, "start");
+  // Pop the intro up until the level has been beaten once; afterwards it only lives in the text box.
+  say(startText.length ? startText : DEFAULT_TEXT, startText.length > 0 && !loadProgress().completed.includes(level.id));
   const ro = new ResizeObserver(relayout);
   ro.observe(wrap);
   relayout();
@@ -430,6 +497,7 @@ export function mountGame(root: HTMLElement, levelId: number, navigate: Navigate
 
   return () => {
     cancelAnimationFrame(raf);
+    dialogue?.close();
     clearTimeout(warnTimer);
     ro.disconnect();
     window.removeEventListener("keydown", onKey);

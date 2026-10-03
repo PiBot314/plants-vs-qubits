@@ -1,11 +1,28 @@
 import { describe, expect, it } from "vitest";
 import { Board } from "../src/game/board";
 import { EntanglementTracker, QUBIT_PURPLE } from "../src/game/entangle";
-import { LEVELS, resolveLevel } from "../src/game/level";
+import { resolveLevel } from "../src/game/level";
 import { earnsStar, Simulation } from "../src/game/sim";
 import { LevelData } from "../src/game/types";
 
-const level1 = LEVELS.find((l) => l.id === 1)!;
+// Test-only level so the tests don't depend on the real (still evolving) level data.
+const level1 = resolveLevel({
+  id: 1,
+  name: "test",
+  lanes: 1,
+  columns: 4,
+  budget: 3,
+  optimalCost: 2,
+  gates: [
+    { type: "X", cost: 2 },
+    { type: "H", cost: 1 },
+    { type: "Z", cost: 1 },
+  ],
+  enemies: [
+    { amplitudes: ["1", "0"], lane: 0, time: 0 },
+    { amplitudes: ["1", "0"], lane: 0, time: 2 },
+  ],
+});
 
 function play(board: Board) {
   const sim = new Simulation(board.level, board.placements);
@@ -132,5 +149,12 @@ describe("binary gates", () => {
     const tracker = new EntanglementTracker(2);
     tracker.link(0, 1);
     expect(tracker.update(sim.state).size).toBe(0);
+  });
+});
+
+describe("level data", () => {
+  it("every level in levels.json resolves", async () => {
+    const { LEVELS } = await import("../src/game/level");
+    expect(LEVELS.length).toBeGreaterThan(0);
   });
 });

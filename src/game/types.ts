@@ -32,7 +32,8 @@ export interface LevelData {
 
 export interface ContentEntry {
   level: number;
-  when: "start" | "end";
+  /** "start", "end", or an in-game trigger: "place:<GATE>", "apply:<GATE>", "damage", "entangle". */
+  when: string;
   text: string;
 }
 

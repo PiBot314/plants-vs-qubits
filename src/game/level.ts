@@ -61,7 +61,7 @@ export const LEVELS: Level[] = (levelsJson as unknown as LevelData[]).map(resolv
 
 const CONTENT = contentJson as unknown as ContentEntry[];
 
-export function getContent(level: number, when: "start" | "end"): string[] {
+export function getContent(level: number, when: string): string[] {
   return CONTENT.filter((e) => e.level === level && e.when === when).map((e) => e.text);
 }
 

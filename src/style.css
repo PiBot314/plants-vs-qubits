@@ -206,3 +206,34 @@ button.icon { width: 2.6em; height: 2.6em; padding: 0; display: grid; place-item
 .dialog .buttons { display: flex; justify-content: center; gap: 0.7rem; margin-top: 0.4rem; }
 .board .dmg { animation: floatup 1.3s ease-out forwards; }
 @keyframes floatup { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-34px); opacity: 0; } }
+
+/* ---------- dialogue ---------- */
+.dlg-overlay {
+  position: absolute; inset: 0; z-index: 10;
+  display: grid; place-items: center;
+  background: rgba(3, 4, 12, 0.55);
+  backdrop-filter: blur(2px);
+  animation: fadein 0.25s ease;
+}
+.dlg-card {
+  width: min(600px, 92vw);
+  padding: 1.8rem 2rem 1.4rem;
+  background: rgba(14, 17, 44, 0.95);
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  box-shadow: 0 0 40px rgba(155, 92, 255, 0.18);
+  display: flex; flex-direction: column; gap: 1.1rem;
+  animation: rise 0.3s ease;
+}
+@keyframes rise { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+.dlg-title { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.18em; color: var(--dim); text-transform: uppercase; }
+.dlg-body { min-height: 4.5rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.dlg-text { margin: 0; font-size: 1.12rem; line-height: 1.6; align-self: stretch; }
+.dlg-foot { display: flex; align-items: center; gap: 1rem; }
+.dlg-foot .dlg-skip { border-color: transparent; color: var(--dim); padding-left: 0.4em; padding-right: 0.4em; }
+.dlg-dots { flex: 1; display: flex; justify-content: center; gap: 0.4rem; }
+.dlg-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.dlg-dot.seen { background: var(--line-strong); }
+.dlg-dot.on { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.dlg-nav { display: flex; gap: 0.6rem; }
+.textbox .pager .expand { border-color: transparent; font-size: 0.95rem; }
