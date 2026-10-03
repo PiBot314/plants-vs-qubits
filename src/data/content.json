@@ -20,5 +20,17 @@
   { "level": 3, "when": "start", "text": "Surprise! H turns 1/√2|0⟩+1/√2|1⟩ into a pure |0⟩. That's 100 damage — even worse than doing nothing! Why?" },
   { "level": 3, "when": "start", "text": "Because when you add 1/√2 + 1/√2, they reinforce each other into 1. H amplified the |0⟩. We need to break that reinforcement." },
   { "level": 3, "when": "start", "text": "Now add a Z gate to the right of your H gate (so qubits hit Z first). Z flips the bottom to -1/√2. Now H sees +1/√2 and -1/√2 — they cancel out! The |0⟩ vanishes. Zero damage!" },
-  { "level": 3, "when": "end", "text": "You used quantum interference! When two amplitudes with opposite signs meet, they cancel. Z set up the cancellation, and H triggered it. This is the secret inside every quantum computer." }
+  { "level": 3, "when": "end", "text": "You used quantum interference! When two amplitudes with opposite signs meet, they cancel. Z set up the cancellation, and H triggered it. This is the secret inside every quantum computer." },
+  { "level": 4, "when": "start", "text": "You've seen that Z sets up the -1/√2 that lets H cancel the |0⟩ away. But what if the -1 is already there from the start?" },
+  { "level": 4, "when": "start", "text": "Look carefully at your enemies this time. Some have a + on the bottom, some have a -. That sign changes everything!" },
+  { "level": 4, "when": "start", "text": "The ones with + at the bottom are |+⟩. They need Z first, then H — just like last level." },
+  { "level": 4, "when": "start", "text": "The ones with - at the bottom are |−⟩. They already have the right setup! H alone will perfectly collapse them to |1⟩ — zero damage!" },
+  { "level": 4, "when": "start", "text": "Spot the sign in each lane, then place the right combination. One set of gates per lane!" },
+  { "level": 4, "when": "end", "text": "Brilliant! The sign on the bottom number told you everything. Signs like this — which physicists call 'phases' — are invisible to measurement, but H turns them into real differences in outcome. This is quantum interference at work." },
+  { "level": 5, "when": "start", "text": "Time to use everything you've learned! All four gates — X, Y, Z, and H — are in your arsenal." },
+  { "level": 5, "when": "start", "text": "The first two lanes have identical |0⟩ enemies. Both X and Y can fix them! Try putting X in one lane and Y in the other — watch how the numbers after each gate are different, even though the damage is the same." },
+  { "level": 5, "when": "start", "text": "The third lane has a |+⟩ enemy — equal + signs on both numbers. You know the Z+H trick: Z flips the bottom negative so H can cancel the |0⟩ away." },
+  { "level": 5, "when": "start", "text": "The fourth lane has a |−⟩ enemy — the one with the minus sign on the bottom. H alone collapses it perfectly to |1⟩." },
+  { "level": 5, "when": "start", "text": "One gate per lane where you can, combine where you must. You've got this!" },
+  { "level": 5, "when": "end", "text": "You've mastered the core toolkit! X and Y both flip |0⟩ to |1⟩, but leave different numbers behind. H creates and resolves superposition. Z sets up the interference that H needs. Together, these four gates can build any quantum computation." }
 ]

@@ -47,5 +47,42 @@
       { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 0, "time": 0 },
       { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 1, "time": 2 }
     ]
+  },
+  {
+    "id": 4,
+    "name": "Sign Matters",
+    "lanes": 3,
+    "columns": 5,
+    "budget": 7,
+    "optimalCost": 5,
+    "gates": [
+      { "type": "H", "cost": 1 },
+      { "type": "Z", "cost": 1 }
+    ],
+    "enemies": [
+      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 0, "time": 0 },
+      { "amplitudes": ["1/sqrt2", "-1/sqrt2"], "lane": 1, "time": 1 },
+      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 2, "time": 2 }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Full Arsenal",
+    "lanes": 4,
+    "columns": 5,
+    "budget": 8,
+    "optimalCost": 5,
+    "gates": [
+      { "type": "X", "cost": 1 },
+      { "type": "Y", "cost": 1 },
+      { "type": "Z", "cost": 1 },
+      { "type": "H", "cost": 1 }
+    ],
+    "enemies": [
+      { "amplitudes": ["1", "0"], "lane": 0, "time": 0 },
+      { "amplitudes": ["1", "0"], "lane": 1, "time": 1 },
+      { "amplitudes": ["1/sqrt2", "1/sqrt2"], "lane": 2, "time": 2 },
+      { "amplitudes": ["1/sqrt2", "-1/sqrt2"], "lane": 3, "time": 3 }
+    ]
   }
 ]
