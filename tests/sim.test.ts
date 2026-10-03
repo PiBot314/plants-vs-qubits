@@ -78,7 +78,7 @@ describe("Board", () => {
     b.place(x, 0, 1);
     expect(b.coins).toBe(1);
     expect(b.place(x, 0, 2)).toBe("Not enough coins");
-    expect(b.place(opt(b, "H"), 0, 1)).toBe("That spot is taken");
+    expect(b.place(x, 0, 1)).toBe("That gate is already there");
     b.undo();
     expect(b.coins).toBe(3);
     const p = b.place(x, 0, 2);
@@ -86,6 +86,20 @@ describe("Board", () => {
     b.remove(p.id);
     expect(b.coins).toBe(3);
     b.undo();
+    expect(b.coins).toBe(1);
+  });
+
+  it("overwrites an occupied spot and undoes the overwrite", () => {
+    const b = new Board(level1);
+    const x = opt(b, "X");
+    const hd = opt(b, "H");
+    b.place(x, 0, 1);
+    const p = b.place(hd, 0, 1);
+    if (typeof p === "string") throw new Error(p);
+    expect(b.placements.map((q) => q.option)).toEqual([hd]);
+    expect(b.coins).toBe(level1.budget - level1.gates[hd].cost);
+    b.undo();
+    expect(b.placements.map((q) => q.option)).toEqual([x]);
     expect(b.coins).toBe(1);
   });
 });

@@ -38,6 +38,7 @@ export class BoardView {
   private gridLayer = s("g");
   private hotLayer = s("g");
   private gateLayer = s("g");
+  private overLayer = s("g");
   private qubitLayer = s("g");
   private fxLayer = s("g");
   private gateEls = new Map<number, SVGGElement>();
@@ -50,7 +51,7 @@ export class BoardView {
     private handlers: BoardHandlers,
   ) {
     this.queueCells = Math.max(1, ...level.enemies.map((e) => e.time + 1));
-    this.svg = s("svg", { class: "board" }, this.gridLayer, this.hotLayer, this.gateLayer, this.qubitLayer, this.fxLayer);
+    this.svg = s("svg", { class: "board" }, this.gridLayer, this.hotLayer, this.gateLayer, this.overLayer, this.qubitLayer, this.fxLayer);
     this.svg.addEventListener("contextmenu", (e) => e.preventDefault());
     this.el = h("div", { class: "scroller" }, this.svg);
   }
@@ -100,29 +101,41 @@ export class BoardView {
     const c = this.cell;
     this.svg.classList.toggle("locked", !editable);
 
+    // Free slots sit under the gates; slots that would overwrite a gate sit over them so they catch the click.
     const hots: SVGElement[] = [];
+    const overs: SVGElement[] = [];
     if (editable && selected) {
       for (let lane = 0; lane < this.level.lanes; lane++) {
         for (let x = 1; x <= this.level.columns; x++) {
           if (board.checkPlacement(selected.index, lane, x) !== null) continue;
-          const onClick = () => this.handlers.onSlot(lane, x);
-          hots.push(
+          const old = board.displaced(selected.index, lane, x);
+          const attrs = {
+            class: old.length ? "hot over" : "hot",
+            onclick: () => this.handlers.onSlot(lane, x),
+            oncontextmenu: (e: Event) => {
+              e.preventDefault();
+              old.forEach((p) => this.handlers.onGateRemove(p.id));
+            },
+            onmouseenter: () => old.length && this.handlers.onGateHover(old[0].id),
+            onmouseleave: () => old.length && this.handlers.onGateHover(null),
+          };
+          (old.length ? overs : hots).push(
             selected.binary
-              ? s("circle", { class: "hot", cx: this.px(x), cy: this.px(lane + 1), r: Math.max(9, c * 0.11), onclick: onClick })
+              ? s("circle", { ...attrs, cx: this.px(x), cy: this.px(lane + 1), r: Math.max(9, c * 0.11) })
               : s("rect", {
-                  class: "hot",
+                  ...attrs,
                   x: this.px(x) - c * 0.1,
                   y: this.px(lane) + c * 0.18,
                   width: c * 0.2,
                   height: c * 0.64,
                   rx: 4,
-                  onclick: onClick,
                 }),
           );
         }
       }
     }
     this.hotLayer.replaceChildren(...hots);
+    this.overLayer.replaceChildren(...overs);
 
     this.gateEls.clear();
     const gates = board.placements.map((p) => {
