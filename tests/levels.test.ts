@@ -88,7 +88,39 @@ const SOLUTIONS: Record<number, Move[]> = {
     { gate: "CNOT", lane: 1, x: 5 },
     { gate: "H", lane: 1, x: 4 },
   ],
+  // Keys for 14–16 were found by solvePerfect (column-aware A*).
+  14: [
+    { gate: "CY", lane: 2, x: 4 },
+    { gate: "X", lane: 1, x: 4 },
+    { gate: "Y", lane: 2, x: 3 },
+    { gate: "CX", lane: 0, x: 3, flip: true },
+    { gate: "CZ", lane: 1, x: 2 },
+    { gate: "H", lane: 1, x: 1 },
+    { gate: "H", lane: 2, x: 1 },
+  ],
+  15: [
+    { gate: "CY", lane: 0, x: 4, flip: true },
+    { gate: "T", lane: 2, x: 4 },
+    { gate: "Z", lane: 0, x: 3 },
+    { gate: "SWAP", lane: 1, x: 3 },
+    { gate: "CX", lane: 0, x: 2 },
+    { gate: "H", lane: 0, x: 1 },
+  ],
+  16: [
+    { gate: "X", lane: 1, x: 4 },
+    { gate: "T", lane: 0, x: 4 },
+    { gate: "CX", lane: 1, x: 3 },
+    { gate: "CX", lane: 0, x: 2, flip: true },
+    { gate: "H", lane: 1, x: 1 },
+  ],
 };
+
+/**
+ * Too big for the exhaustive solver: these only check that the key wins at
+ * optimalCost. Optimal costs were found with solvePerfect (minimum perfect
+ * cost); a cheaper lossy win hasn't been ruled out.
+ */
+const UNVERIFIED_OPTIMUM = new Set([14, 15, 16]);
 
 describe.each(Object.keys(SOLUTIONS).map(Number))("level %i", (id) => {
   const level = getLevel(id)!;
@@ -96,7 +128,7 @@ describe.each(Object.keys(SOLUTIONS).map(Number))("level %i", (id) => {
   it("answer key wins with full HP at exactly the optimal cost", () => {
     const board = new Board(level);
     for (const m of SOLUTIONS[id]) {
-      const option = level.gates.findIndex((g) => g.type === m.gate);
+      const option = level.gates.findIndex((g) => g.type === m.gate || g.label === m.gate);
       expect(option, `gate ${m.gate} not available`).toBeGreaterThanOrEqual(0);
       const p = board.place(option, m.lane, m.x);
       if (typeof p === "string") throw new Error(`${m.gate}@${m.lane},${m.x}: ${p}`);
@@ -109,7 +141,7 @@ describe.each(Object.keys(SOLUTIONS).map(Number))("level %i", (id) => {
     expect(sim.hp).toBeCloseTo(100, 6);
   });
 
-  it("no cheaper solution survives", () => {
+  it.skipIf(UNVERIFIED_OPTIMUM.has(id))("no cheaper solution survives", () => {
     const r = solve(level);
     expect(r.minWin).toBe(level.optimalCost);
     expect(r.minPerfect).toBe(level.optimalCost);

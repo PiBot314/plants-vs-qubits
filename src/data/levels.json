@@ -913,5 +913,277 @@
         "time": 2
       }
     ]
+  },
+  {
+    "id": 14,
+    "name": "The Controlled Gate Suite",
+    "lanes": 4,
+    "columns": 4,
+    "budget": 12,
+    "optimalCost": 10,
+    "gates": [
+      {
+        "type": "X"
+      },
+      {
+        "type": "Y"
+      },
+      {
+        "type": "Z"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "S"
+      },
+      {
+        "type": "T"
+      },
+      {
+        "type": "CX"
+      },
+      {
+        "type": "CY"
+      },
+      {
+        "type": "CZ"
+      }
+    ],
+    "enemies": [
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "-1/sqrt2"
+        ],
+        "lanes": [
+          0,
+          1
+        ],
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "1/2",
+          "-1/2",
+          "1/2",
+          "1/2"
+        ],
+        "lanes": [
+          1,
+          2
+        ],
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "0",
+          "1/sqrt2",
+          "-i/sqrt2",
+          "0"
+        ],
+        "lanes": [
+          2,
+          3
+        ],
+        "time": 2
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Multi-Lane Routing",
+    "lanes": 3,
+    "columns": 4,
+    "budget": 12,
+    "optimalCost": 10,
+    "gates": [
+      {
+        "type": "X"
+      },
+      {
+        "type": "Y"
+      },
+      {
+        "type": "Z"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "S"
+      },
+      {
+        "type": "T"
+      },
+      {
+        "type": "CX"
+      },
+      {
+        "type": "CY"
+      },
+      {
+        "type": "CZ"
+      },
+      {
+        "type": "SWAP"
+      }
+    ],
+    "enemies": [
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "(-1+i)/2"
+        ],
+        "lanes": [
+          0,
+          2
+        ],
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "0",
+          "1"
+        ],
+        "lane": 1,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "0",
+          "1"
+        ],
+        "lane": 1,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "0",
+          "1"
+        ],
+        "lane": 2,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "1/sqrt2"
+        ],
+        "lane": 0,
+        "time": 2
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "The GHZ Triad",
+    "lanes": 3,
+    "columns": 4,
+    "budget": 9,
+    "optimalCost": 7,
+    "gates": [
+      {
+        "type": "X"
+      },
+      {
+        "type": "Y"
+      },
+      {
+        "type": "Z"
+      },
+      {
+        "type": "H"
+      },
+      {
+        "type": "S"
+      },
+      {
+        "type": "T"
+      },
+      {
+        "type": "CX"
+      },
+      {
+        "type": "CY"
+      },
+      {
+        "type": "CZ"
+      }
+    ],
+    "enemies": [
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "(-1+i)/2"
+        ],
+        "lanes": [
+          0,
+          1,
+          2
+        ],
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "0",
+          "1"
+        ],
+        "lane": 0,
+        "time": 1
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "-1/sqrt2"
+        ],
+        "lane": 1,
+        "time": 2
+      },
+      {
+        "amplitudes": [
+          "0",
+          "1"
+        ],
+        "lane": 2,
+        "time": 3
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "(-1+i)/2"
+        ],
+        "lanes": [
+          0,
+          1
+        ],
+        "time": 4
+      },
+      {
+        "amplitudes": [
+          "1/sqrt2",
+          "0",
+          "0",
+          "-1/sqrt2"
+        ],
+        "lanes": [
+          1,
+          2
+        ],
+        "time": 5
+      }
+    ]
   }
 ]

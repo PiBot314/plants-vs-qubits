@@ -324,10 +324,10 @@
   },
   {
     "id": "cnot",
-    "term": "CNOT gate",
+    "term": "CNOT gate (CX)",
     "category": "Gate",
     "level": 9,
-    "text": "A two-qubit gate. It flips the target (⊕) qubit only when the control (●) qubit is |1⟩. If the control is in a superposition, the two qubits become entangled.",
+    "text": "A two-qubit gate, also written CX. It flips the target (⊕) qubit only when the control (●) qubit is |1⟩. If the control is in a superposition, the two qubits become entangled.",
     "wiki": "https://en.wikipedia.org/wiki/Controlled_NOT_gate",
     "bloch": {
       "gate": "CNOT",
@@ -375,6 +375,54 @@
         "0",
         "i/sqrt2"
       ]
+    }
+  },
+  {
+    "id": "swap",
+    "term": "SWAP gate",
+    "category": "Gate",
+    "level": 13,
+    "text": "A two-qubit gate that trades the states of two neighbouring qubits, entanglement and all. It's built from three CNOTs, which is why it costs more than one.",
+    "wiki": "https://en.wikipedia.org/wiki/Quantum_logic_gate#Swap_gate",
+    "bloch": {
+      "gate": "SWAP",
+      "from": [
+        [
+          "1",
+          "0"
+        ],
+        [
+          "1/sqrt2",
+          "1/sqrt2"
+        ]
+      ],
+      "caption": "The two arrows trade places: SWAP moves each qubit's state into the other lane."
+    }
+  },
+  {
+    "id": "ghz",
+    "term": "GHZ state",
+    "category": "Concept",
+    "level": 16,
+    "text": "A state of three (or more) qubits that share one entangled state, such as 1/√2|000⟩ + 1/√2|111⟩. Measuring any one qubit fixes all the others. Oddly, any two of them on their own are only classically correlated: the entanglement belongs to the group as a whole. A CNOT can peel off one qubit at a time, leaving a smaller entangled state behind.",
+    "wiki": "https://en.wikipedia.org/wiki/Greenberger%E2%80%93Horne%E2%80%93Zeilinger_state",
+    "bloch": {
+      "gate": "CNOT",
+      "joint": [
+        "1/sqrt2",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "1/sqrt2"
+      ],
+      "on": [
+        0,
+        1
+      ],
+      "caption": "Peeling a GHZ triad: the target goes free, and the other two stay as a Bell pair."
     }
   },
   {
