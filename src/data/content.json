@@ -25,7 +25,7 @@
   {"level": 2, "when": "apply:Z", "text": "So X and Y both block damage, while Z seems useless for now. But Z did change the numbers! That -1 will matter a lot in the next level. For now, use X and Y to survive!"},
   {"level": 2, "when": "end", "text": "You survived! X and Y blocked the |0⟩ enemies completely. Z changed the numbers but not the damage. Remember that -1 twist — it won't always be useless."},
   {"level": 3, "when": "start", "text": "Remember that -1 twist from Z that didn't help last time? This level is why it exists."},
-  {"level": 3, "when": "start", "text": "Your new enemies are in [[superposition|state 1/√2|0⟩ + 1/√2|1⟩]]. The top and bottom are equal, so there's a 50% chance of |0⟩. You'll take 50 damage if nothing happens."},
+  {"level": 3, "when": "start", "text": "Your new enemies are in [[superposition|state 1/√2|0⟩ + 1/√2|1⟩]]. The top and bottom are equal, so there's a 50% chance of |0⟩. Each one that slips through costs 50 HP, and two come down every lane, so you can't afford to leave a lane undefended."},
   {"level": 3, "when": "start", "text": "You have an [[h|H gate]]! H is special — it mixes the top and bottom amplitudes together. Try placing just an H and see what happens...", "bloch": {"gate": "H", "from": [["1", "0"]]}},
   {"level": 3, "when": "start", "text": "Surprise! H turns 1/√2|0⟩+1/√2|1⟩ into a pure |0⟩. That's 100 damage — even worse than doing nothing! Why?"},
   {"level": 3, "when": "start", "text": "Because when you add 1/√2 + 1/√2, they reinforce each other into 1. H amplified the |0⟩. We need to break that reinforcement."},
@@ -39,8 +39,8 @@
   {"level": 4, "when": "end", "text": "Brilliant! The sign on the bottom number told you everything. Signs like this — which physicists call [[phase|'phases']] — are invisible to measurement, but H turns them into real differences in outcome. This is quantum interference at work."},
   {"level": 5, "when": "start", "text": "Time to use everything you've learned! All four gates — X, Y, Z, and H — are in your arsenal."},
   {"level": 5, "when": "start", "text": "The first two lanes have identical |0⟩ enemies. Both X and Y can fix them! Try putting X in one lane and Y in the other — watch how the numbers after each gate are different, even though the damage is the same."},
-  {"level": 5, "when": "start", "text": "The third lane has a |+⟩ enemy — equal + signs on both numbers. You know the Z+H trick: Z flips the bottom negative so H can cancel the |0⟩ away."},
-  {"level": 5, "when": "start", "text": "The fourth lane has a |−⟩ enemy — the one with the minus sign on the bottom. H alone collapses it perfectly to |1⟩."},
+  {"level": 5, "when": "start", "text": "The third lane has |+⟩ enemies — equal + signs on both numbers. You know the Z+H trick: Z flips the bottom negative so H can cancel the |0⟩ away."},
+  {"level": 5, "when": "start", "text": "The fourth lane has |−⟩ enemies — the ones with the minus sign on the bottom. H alone collapses them perfectly to |1⟩."},
   {"level": 5, "when": "start", "text": "One gate per lane where you can, combine where you must. You've got this!"},
   {"level": 5, "when": "end", "text": "You've mastered the core toolkit! X and Y both flip |0⟩ to |1⟩, but leave different numbers behind. H creates and resolves superposition. Z sets up the interference that H needs. Together, these four gates can build any quantum computation."},
   {"level": 6, "when": "start", "text": "New gate: the [[s|S gate]]! S multiplies the bottom amplitude by i. On the Bloch sphere, that's a quarter turn (90°) around the vertical axis.", "bloch": {"gate": "S", "from": [["1/sqrt2", "1/sqrt2"]]}},
@@ -85,5 +85,9 @@
   {"level": 12, "when": "start", "text": "Meet the [[cy|CY gate]]: if the control (●) is |1⟩, it applies Y to the target. Y brings its own factor of ±i, which can cancel the pair's i exactly.", "bloch": {"gate": "CY", "joint": ["1/sqrt2", "0", "0", "i/sqrt2"]}},
   {"level": 12, "when": "start", "text": "Like CNOT, CY has a direction: click a placed CY to swap control and target. Try both ways, and watch which lane ends up in which state. The cheapest answer isn't the obvious one."},
   {"level": 12, "when": "disentangle", "text": "Untangled! The i got absorbed by the Y. Hover over the qubits to see where each one ended up."},
-  {"level": 12, "when": "end", "text": "Controlled-anything: any single-qubit gate can be given a control qubit. CNOT, CZ and CY are just the three most famous."}
+  {"level": 12, "when": "end", "text": "Controlled-anything: any single-qubit gate can be given a control qubit. CNOT, CZ and CY are just the three most famous."},
+  {"level": 13, "when": "start", "text": "These Ψ− pairs have split up: one qubit in lane 1, its partner in lane 3. A corner gate only joins neighbouring lanes, so no CNOT can reach both halves."},
+  {"level": 13, "when": "start", "text": "Meet the SWAP gate: it trades the states of the two qubits crossing its corner. The harmless |1⟩ in lane 2 makes a perfect stand-in to swap with."},
+  {"level": 13, "when": "start", "text": "Bring each pair together, then remember the trick from the Entanglement Sandbox: CNOT followed by H on the control turns Ψ− straight into |11⟩."},
+  {"level": 13, "when": "end", "text": "Real quantum chips face the same problem: qubits can only talk to their neighbours, so compilers insert SWAPs to route them together. A SWAP is three CNOTs in a row, which is why it costs more than one."}
 ]

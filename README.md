@@ -71,7 +71,8 @@ Members of an entangled group always share a `time`.
 
 ### Checking a level
 
-`tests/levels.test.ts` keeps an answer key for levels 6–12. For each level it
+`tests/levels.test.ts` keeps an answer key for every level except 2, whose |+⟩ lane
+can't be fixed before H is introduced. For each level it
 checks that:
 - the key is legal on the real board,
 - it wins with full HP at exactly `optimalCost`,
@@ -136,7 +137,19 @@ link points at a real entry that's unlocked by that level.
 
 ### `gates.json`
 
-Holds the display name, default cost and help text for each gate type.
+Holds the display name, default cost and help text for each gate type. Levels should
+stick to the defaults:
+
+| Gates                       | Cost | Why |
+| --------------------------- | ---- | --- |
+| I X Y Z H S T               | 1    | The basic toolkit. Raising any of them only inflates totals; no solution changes. |
+| P(φ)                        | 2    | Any angle, so it must cost more than Z/S/T, or the named gates become pointless. |
+| CNOT CZ CY                  | 2    | Interchangeable via single-qubit gates, so they share a price. |
+| SWAP                        | 3    | Must be under two CNOTs (4), which can already move a pair one lane, and above one CNOT. |
+
+Each level's `budget` should leave a little slack above `optimalCost`. A ★ goes to any
+win at or under `optimalCost`, so make sure skipping a lane loses outright (send two
+qubits down it), or players can trade HP for a cheaper star.
 
 ## Pedagogical Level Design
 
