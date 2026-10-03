@@ -19,6 +19,7 @@ export interface BoardHandlers {
   onGateRemove(id: number): void;
   onGateHover(id: number | null): void;
   onQubitHover(k: number | null): void;
+  onQubitClick(k: number): void;
 }
 
 interface QubitEl {
@@ -158,6 +159,13 @@ export class BoardView {
           g.append(s("circle", { class: "dot", cx: x, cy: yc, r: rr * 0.6 }));
           g.append(s("rect", { class: "box", x: x - b / 2, y: yt - b / 2, width: b, height: b, rx: 5 }));
           g.append(s("text", { x, y: yt, "font-size": b * 0.62 }, "Y"));
+        } else if (opt.type === "SWAP") {
+          // The usual circuit symbol: a cross on each lane.
+          const k = rr * 0.7;
+          for (const y of [yTop, yBot]) {
+            g.append(s("line", { class: "wire", x1: x - k, x2: x + k, y1: y - k, y2: y + k }));
+            g.append(s("line", { class: "wire", x1: x - k, x2: x + k, y1: y + k, y2: y - k }));
+          }
         } else {
           g.append(s("circle", { class: "dot", cx: x, cy: yTop, r: rr * 0.6 }));
           g.append(s("circle", { class: "dot", cx: x, cy: yBot, r: rr * 0.6 }));
@@ -197,6 +205,7 @@ export class BoardView {
         "g",
         {
           class: "qubit",
+          onclick: () => this.handlers.onQubitClick(k),
           onmouseenter: () => this.handlers.onQubitHover(k),
           onmouseleave: () => this.handlers.onQubitHover(null),
         },

@@ -8,7 +8,7 @@
  * and identical waves are merged. Unary-only levels are solved lane by lane, enforcing
  * that each lane holds at most `columns` gates.
  */
-import { binaryTarget, BinaryGateType, isDirected, unaryMatrix, UnaryGateType } from "../src/quantum/gates";
+import { applyBinary, BinaryGateType, isDirected, unaryMatrix, UnaryGateType } from "../src/quantum/gates";
 import { StateVector } from "../src/quantum/state";
 import { Level } from "../src/game/types";
 
@@ -84,7 +84,6 @@ function opsOf(level: Level, lanes: number[]): Op[] {
         });
       }
     } else {
-      const m = binaryTarget(g.type as BinaryGateType);
       for (const top of lanes) {
         if (!lanes.includes(top + 1)) continue;
         for (const flipped of isDirected(g.type) ? [false, true] : [false]) {
@@ -97,7 +96,7 @@ function opsOf(level: Level, lanes: number[]): Op[] {
                 const b = waves[i].local.get(top + 1);
                 if (a === undefined || b === undefined) return st;
                 const next = st.clone();
-                next.applyControlled(flipped ? b : a, flipped ? a : b, m);
+                applyBinary(next, g.type as BinaryGateType, flipped ? b : a, flipped ? a : b);
                 return next;
               }),
           });

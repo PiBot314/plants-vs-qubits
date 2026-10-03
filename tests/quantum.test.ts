@@ -114,3 +114,17 @@ describe("entangled starting states", () => {
     expect(s.purity([0])).toBeCloseTo(1);
   });
 });
+
+describe("SWAP", () => {
+  it("exchanges two qubits' states", async () => {
+    const { applyBinary } = await import("../src/quantum/gates");
+    const s = StateVector.fromProduct([
+      [c(1), c(0)],
+      [c(r), c(0, r)],
+    ]);
+    applyBinary(s, "SWAP", 0, 1);
+    expect(s.marginalP0(1)).toBeCloseTo(1);
+    const q0 = s.subsystemState([0])!;
+    expect(q0[1].im).toBeCloseTo(r);
+  });
+});

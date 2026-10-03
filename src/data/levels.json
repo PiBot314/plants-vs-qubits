@@ -784,5 +784,41 @@
         "time": 2
       }
     ]
+  },
+  {
+    "id": 13,
+    "name": "Swap Meet",
+    "lanes": 2,
+    "columns": 4,
+    "budget": 4,
+    "optimalCost": 4,
+    "gates": [
+      {
+        "type": "SWAP",
+        "cost": 3
+      },
+      {
+        "type": "X",
+        "cost": 1
+      }
+    ],
+    "enemies": [
+      {
+        "amplitudes": [
+          "1",
+          "0"
+        ],
+        "lane": 0,
+        "time": 0
+      },
+      {
+        "amplitudes": [
+          "0",
+          "1"
+        ],
+        "lane": 1,
+        "time": 0
+      }
+    ]
   }
 ]
