@@ -1,38 +1,133 @@
 # Bloch It!
 
-A quantum tower-defence game for the Quriosity game jam. Enemy qubits fly in from the
-right. Place unitary gates on the grid so each one arrives at the left edge as |1⟩.
-Each qubit that reaches the edge costs **P(0) × 100 HP**.
+Bloch It! is a browser-based quantum tower-defence puzzle game built for the Quriosity game jam. Enemy qubits arrive from the right, and you place quantum gates on the grid to steer each one into a harmless |1⟩ state before it reaches the left edge. If a qubit reaches the base in a dangerous state, it deals damage based on the probability of measuring |0⟩.
 
-## Running
+The game turns quantum mechanics into a playable system: you are not “shooting” enemies, you are shaping amplitudes, phases, interference, and entanglement with the tools of quantum computation.
+
+## What is new in the current version?
+
+The game has grown well beyond the original prototype. The current build includes:
+
+- Full level progression through 16 handcrafted levels
+- More gate types: I, X, Y, Z, H, S, T, P, CNOT, CZ, CY, SWAP
+- Phase-based mechanics and interference puzzles
+- Entangled qubits and multi-qubit gate logic, including three-qubit GHZ states
+- Real-time Bloch-sphere visualisation and live amplitude displays
+- An encyclopedia for quantum concepts and terminology
+- Star-based scoring and persistent progress in localStorage
+- A stronger tutorial arc that teaches the ideas gradually instead of dumping theory all at once
+
+## Core gameplay
+
+- Qubits move left one cell per tick.
+- A qubit with `time: t` starts `t` cells to the right.
+- Unary gates sit on a vertical grid line inside a lane and affect every qubit crossing that line.
+- Binary gates are placed at the corner where two lanes meet. They trigger only when both qubits cross that corner in the same tick.
+- Measurement at the left edge is deterministic from the expected damage. A qubit in state α|0⟩ + β|1⟩ has probability P(0) = |α|², so damage is `P(0) × 100`.
+- You win if HP remains above zero after all qubits have passed.
+- You earn a star if your total gate cost is no more than the level’s `optimalCost`.
+- Entangled qubits are coloured by group and show a joint state; hover to inspect it.
+
+## Gates in the game
+
+### Single-qubit gates
+
+- I — identity
+- X — bit flip, swaps |0⟩ and |1⟩
+- Y — bit and phase flip
+- Z — phase flip, negates the |1⟩ amplitude
+- H — Hadamard, mixes bases and reveals interference
+- S — phase shift by π/2
+- T — phase shift by π/4
+- P — arbitrary phase rotation
+
+### Multi-qubit gates
+
+- CNOT (also written CX) — flips the target when the control qubit is |1⟩
+- CZ — applies a phase flip to |11⟩
+- CY — controlled-Y operation
+- SWAP — swaps the states of two qubits
+
+CNOT and CY can be clicked after placement to swap control and target (CZ and SWAP are symmetric).
+
+## How to play
+
+1. Install dependencies:
+
+   ```sh
+   npm install
+   ```
+
+2. Start the dev server:
+
+   ```sh
+   npm run dev
+   ```
+
+3. Open the URL shown by Vite in your browser.
+
+4. Place gates, run the board, and keep the incoming qubits from reaching the left edge as dangerous |0⟩ states.
+
+5. Clear levels to unlock more, and use the optimal-cost solution to earn stars.
+
+## Testing and build
 
 ```sh
-npm install
-npm run dev      # dev server
-npm test         # logic tests (Vitest)
-npm run build    # static build in dist/
+npm test         # Vitest logic tests
+npm run build    # production build in dist/
 ```
 
-Stack: Vite + TypeScript, no framework. The board is SVG and progress is saved in `localStorage`.
+The project uses Vite + TypeScript with no frontend framework. Progress is saved in `localStorage`, and the board rendering is SVG-based.
 
-## Rules (as implemented)
+## Level progression
 
-- Qubits move one cell left per tick. A qubit with `time: t` sits `t` cells to the
-  right of the grid at the start.
-- **Unary gates** (I X Y Z H S T P) sit on a vertical grid line inside a lane. They act on
-  every qubit that crosses that line.
-- **Binary gates** (CNOT, CZ, CY) sit on a corner where a vertical line meets the boundary
-  between two lanes. They fire only when a qubit in *each* lane crosses that line on the
-  same tick. A CNOT or CY starts with its control on the top lane; click it to swap.
-- Measurement at the left edge does not collapse the state. Damage is the expected
-  value, so runs are deterministic.
-- You win if HP > 0 after every qubit has passed. You earn a ★ if the gates cost
-  no more than `optimalCost`.
-- Entangled qubits are coloured by group, and each group gets a distinct non-purple
-  colour. They show P(1) because they have no individual state. Hover one to see the
-  joint state.
+The current level set includes:
 
-## Data files (`src/data/`)
+1. First Flip
+2. Spooky Pair
+3. The H Paradox
+4. Sign Matters
+5. Full Arsenal
+6. Quarter-Turns
+7. Eighth-Turns
+8. Phase Sandbox
+9. Spooky Action
+10. Entanglement Sandbox
+11. Phase Control
+12. Controlled Rotations
+13. Swap Meet
+14. The Controlled Gate Suite
+15. Multi-Lane Routing
+16. The GHZ Triad
+
+These levels are designed to introduce quantum ideas gradually:
+
+- basic state-flipping
+- phase and sign changes
+- interference
+- multi-qubit control and entanglement
+- rotation gates and phase tricks
+- swap and controlled operations
+- routing across lanes and three-qubit (GHZ) entanglement
+
+## Project structure
+
+- `src/data/levels.json` — level definitions, gate availability, enemies, budgets, and optimal costs
+- `src/data/content.json` — in-game tutorial text, dialogue triggers, Bloch animations, and encyclopedia links
+- `src/data/encyclopedia.json` — learn-as-you-go quantum references
+- `src/data/gates.json` — display names, costs, and help text for every gate type
+- `src/game/` — simulation, level loading, and progress logic
+- `src/quantum/` — complex numbers, gates, parsing, and state math
+- `src/ui/` — game screen, menus, dialogues, and encyclopedia UI
+- `tests/` — rule checks, solver validation, and level verification
+
+## Notes for contributors
+
+The data files are deliberately authorable. `levels.json` contains the puzzle content; `content.json` drives the tutorial and dialogue; `encyclopedia.json` carries the explanatory entries. The solver and test suite are used to validate level legality, cost-optimality, and game state transitions.
+
+If you want to add a new level, update the level definition plus any supporting tutorial content and encyclopedia entries that it introduces. The formats are described below.
+
+## Authoring reference
 
 ### `levels.json`: array of levels
 
@@ -162,24 +257,7 @@ Each level's `budget` should leave a little slack above `optimalCost`. A ★ goe
 win at or under `optimalCost`, so make sure skipping a lane loses outright (send two
 qubits down it), or players can trade HP for a cheaper star.
 
-## Pedagogical Level Design
+## License and project status
 
-The levels are designed to introduce quantum mechanics incrementally, without ever feeling like a lecture.
+This project is an experimental game prototype and educational tool. It is intentionally designed to teach the intuition behind quantum algorithms through puzzle play rather than formal lecture-style instruction.
 
-- **Level 1 – First Flip**: Introduces the `|0⟩`/`|1⟩` notation, the HP system, and the X gate as a
-  "flipper" without calling it a gate. One lane, two identical enemies. The single available
-  gate (X) makes the solution obvious. The end card formally names it a "gate."
-
-- **Level 2 – The Three Axes**: Introduces X, Y, and Z as gates that spin the qubit sphere
-  around three different axes. Players are invited to **watch the displayed amplitudes
-  change in real-time** as each gate is applied. A key insight is revealed: X and Y both
-  block damage (the top amplitude becomes 0), but their output numbers look different due
-  to the imaginary multipliers. Z changes the bottom number by −1 but leaves the top
-  untouched — so it doesn't reduce damage yet. This seeds curiosity: *the numbers changed,
-  but it didn't help... why would Z ever matter?*
-
-- **Level 3 – Phase Space** *(coming soon)*: Introduces the Hadamard gate, which mixes the
-  top and bottom amplitudes together. Now Z's −1 twist *does* affect the top amplitude
-  after an H, making phase differences visible as damage differences for the first time.
-
-Level 3 is a placeholder dummy. Replace it with a real level.
